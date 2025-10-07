@@ -1,8 +1,7 @@
 
 import { SortOptions } from '@halcyontech/vscode-ibmi-types/api/IBMiContent';
 import vscode, { l10n, TreeDataProvider } from 'vscode';
-import { Code4i } from '../tools';
-import { IBMiContentFS, sortObjectArrayByProperty } from "../api/IBMiContentfs";
+import { IBMiContentCommon, sortObjectArrayByProperty } from "../api/IBMiContentCommon";
 import { IBMiContentJobs } from "../api/IBMiContentJobs";
 import { IBMiUserJobsUsers, IBMiUserJobsFilter, IBMiUserJob, ObjAttributes, ObjLockState } from '../typings';
 import { getUsrJobDetailFileUri } from '../filesystem/qsys/UsrJobFs';
@@ -59,7 +58,7 @@ export default class UserJobBrowser implements TreeDataProvider<any> {
       if (this._userFilters && this._userFilters.length > 0) {
         const filtereditems: IBMiUserJobsFilter[] = this._userFilters.filter((item: any) => item === item);
         const distinctNames: string[] = [...new Set(filtereditems.map(item => item.user))];
-        const objAttributes = await IBMiContentFS.getObjectText(distinctNames, [], ['*USRPRF']);
+        const objAttributes = await IBMiContentCommon.getObjectText(distinctNames, [], ['*USRPRF']);
         const users = this._userFilters.map((item) =>
         ({
           user: item.user,
@@ -120,7 +119,7 @@ export default class UserJobBrowser implements TreeDataProvider<any> {
         item.setRecordCount(item.listCount);
       }
       if (!item.text) {
-        const objAttributes = await IBMiContentFS.getObjectText([element.messageQueue], [element.messageQueueLibrary], [`*USRPRF`]) || '';
+        const objAttributes = await IBMiContentCommon.getObjectText([element.messageQueue], [element.messageQueueLibrary], [`*USRPRF`]) || '';
         item.text = objAttributes[0].text;
         item.setDescription();
       }
@@ -141,7 +140,7 @@ export default class UserJobBrowser implements TreeDataProvider<any> {
       item.tooltip.supportHtml = true;
 
     } else if (item instanceof UserJob) {
-      const qualQueue = item.jobQueueName ? item.jobQueueLibrary + '/' + item.jobQueueName :'';
+      const qualQueue = item.jobQueueName ? item.jobQueueLibrary + '/' + item.jobQueueName : '';
       item.tooltip = new vscode.MarkdownString(`<table>`
         .concat(`<thead>${item.label}</thead><hr>`)
         .concat(`<tr><td>${l10n.t(`Job Status:`)} </td><td>&nbsp;${l10n.t(String(item.jobStatus))}</td></tr>`)
@@ -254,7 +253,7 @@ export class UserJob extends vscode.TreeItem implements IBMiUserJob {
     this.activeJobStatus = object.activeJobStatus;
     this.jobEnteredSystemTime = object.jobEnteredSystemTime;
     this.command = {
-      command: `vscode-ibmi-queues.userJobBrowser.viewUserJobDetails`,
+      command: `vscode-ibmi-queues.userJobBrowser.viewDetails`,
       title: `Show Job Details`,
       arguments: [this]
     };
@@ -267,12 +266,12 @@ export class UserJob extends vscode.TreeItem implements IBMiUserJob {
   setIconColor(): string { return ''; }
   updateIconPath() { this.iconPath = new vscode.ThemeIcon(this.setIcon(), new vscode.ThemeColor(this.setIconColor())); }
   updateContextValue(newContextValue: string) { this.contextValue = newContextValue; }
-  setContextValue(item: IBMiUserJob) { 
-    this.contextValue = `userJobJob_` +item.jobType+'_'+item.jobStatus;
+  setContextValue(item: IBMiUserJob) {
+    this.contextValue = `userJobJob_` + item.jobType + '_' + item.jobStatus;
     if (item.activeJobStatus && item.activeJobStatus !== 'DSPW') {
-      this.contextValue +='_'+item.activeJobStatus;
+      this.contextValue += '_' + item.activeJobStatus;
     } else if (item.jobQueueStatus && item.jobQueueStatus !== 'RELEASED') {
-      this.contextValue += '_'+item.jobQueueStatus;
+      this.contextValue += '_' + item.jobQueueStatus;
     }
   }
 }
@@ -283,10 +282,10 @@ function createUserListNodeLabel(theValue: IBMiUserJobsUsers) {
 }
 function createUserJobNodeLabel(object: IBMiUserJob) {
   let q = `${object.jobName} - (${object.jobType}) ${object.jobStatus}`;
-  if (object.activeJobStatus) { q += ' - ' + object.activeJobStatus; 
+  if (object.activeJobStatus) {
+    q += ' - ' + object.activeJobStatus;
 
-  } else if (object.jobQueueStatus) 
-    { q += ' - ' + object.jobQueueStatus; }
+  } else if (object.jobQueueStatus) { q += ' - ' + object.jobQueueStatus; }
   return q;
 }
 function lookupItemText(aFilter: IBMiUserJobsFilter, objAttributes: ObjAttributes[]): string {

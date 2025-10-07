@@ -14,16 +14,16 @@ export class SplfSearchView implements TreeDataProvider<any> {
 
   constructor(context: vscode.ExtensionContext) {
     context.subscriptions.push(
-      vscode.commands.registerCommand(`vscode-ibmi-splfbrowser2.refreshSearchView`, async () => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser2.refreshSearchView`, async () => {
         this.refresh();
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-splfbrowser2.closeSearchView`, async () => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser2.closeSearchView`, async () => {
         vscode.commands.executeCommand(`setContext`, `vscode-ibmi-splfbrowser:searchViewVisible`, false);
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-splfbrowser2.collapseSearchView`, async () => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser2.collapseSearchView`, async () => {
         this.collapse();
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-splfbrowser2.expandSearchView`, async () => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser2.expandSearchView`, async () => {
         this.expand();
       }),
     );
@@ -160,7 +160,7 @@ class LineHit extends vscode.TreeItem {
     this.description = String(line.number);
 
     this.command = {
-      // command: `vscode-ibmi-splfbrowser. openSplfWithoutLineSpacing`,
+      // command: `vscode-ibmi-queues.splfbrowser2. openWithoutLineSpacing`,
       command: `vscode.openWith`,
       title: `Open Spooled File`,
       tooltip: `Open Spooled File`,

@@ -2,7 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-import ObjectProvider from './objectProvider';
 import { Code4i } from './tools';
 import { initializeSpooledFileBrowser } from './SpooledFileBrowser';
 import { initializeSpooledFileSearchView } from './SpooledFileSearchResults';

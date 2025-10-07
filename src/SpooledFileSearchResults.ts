@@ -20,7 +20,7 @@ let splfSearchViewProvider = <SplfSearchView>{};
 export async function initializeSpooledFileSearchView(context: vscode.ExtensionContext) {
   splfSearchViewProvider = new SplfSearchView(context);
   context.subscriptions.push(
-    vscode.commands.registerCommand(`vscode-ibmi-splfbrowser2.searchSpooledFiles`, async (node) => {
+    vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser2.search`, async (node) => {
       let search = <SearchParms>{};
       //Initiate search from Spooled file item
       if (node && (/^spooledfile2/.test(node.contextValue))) {
@@ -117,7 +117,7 @@ export async function initializeSpooledFileSearchView(context: vscode.ExtensionC
                   clearInterval(messageTimeout);
                 }
               }, timeoutInternal);
-              // vscode.commands.executeCommand(`vscode-ibmi-splfbrowser.revealSPLFBrowser`, node, {expand:true});
+              // vscode.commands.executeCommand(`vscode-ibmi-queues.splfbrowser2.revealBrowser`, node, {expand:true});
               let results = await SplfSearch.searchSpooledFiles(search.term, {name:search.item, library:search.library, type:search.type}, search.splfName, search.filter);
               if (results.length > 0) {
                 results.forEach(result => {
@@ -147,10 +147,10 @@ export async function initializeSpooledFileSearchView(context: vscode.ExtensionC
       }
 
     }),
-    vscode.commands.registerCommand(`vscode-ibmi-splfbrowser2.dropUpdatedSPOOLED_FILE_DATA_TF`, async () => {
+    vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser2.dropUpdatedSPOOLED_FILE_DATA_TF`, async () => {
       await checkSystemFunctionState('SPOOLED_FILE_DATA', 'drop');
     }),
-    vscode.commands.registerCommand(`vscode-ibmi-splfbrowser2.createUpdatedSPOOLED_FILE_DATA_TF`, async (node) => {
+    vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser2.createUpdatedSPOOLED_FILE_DATA_TF`, async (node) => {
       let message = l10n.t(`Are you having troubles searching through spooled files?`);
       let detail = ``;
       vscode.window.showWarningMessage(message, { modal: true, detail }, l10n.t(`Yes`), l10n.t(`No`))

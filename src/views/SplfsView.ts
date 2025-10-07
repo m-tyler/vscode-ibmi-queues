@@ -57,7 +57,7 @@ export default class SPLFBrowser implements TreeDataProvider<any> {
     const items = [];
     const connection = getConnection();
     if (connection) {
-      // const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-splfbrowser.spooledFileFilters');
+      // const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser2.spooledFileFilters');
 
       const config = getConfig();
 
@@ -311,7 +311,7 @@ export class SpooledFiles extends vscode.TreeItem implements IBMiSpooledFile {
     this.resourceUri = getSpooledFileUri(parent.type, inp, this.openQueryparms) || '';
     this.path = this.resourceUri.path.substring(1); // removes leading slash for QSYS paths
     this.command = {
-      command: `vscode-ibmi-splfbrowser.openSplfWithoutLineSpacing`,
+      command: `vscode-ibmi-queues.splfbrowser2.openWithoutLineSpacing`,
       title: `Open Spooled File`,
       arguments: [this, undefined, this.openQueryparms]
     };

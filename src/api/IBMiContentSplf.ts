@@ -101,7 +101,7 @@ export namespace IBMiContentSplf {
   * @param {SplfOpenOptions} options 
   * @returns {string} a string containing spooled file data 
   */
-  export async function downloadSpooledFileContent(pPath: string, options: SplfOpenOptions): Promise<string> {
+  export async function downloadContent(pPath: string, options: SplfOpenOptions): Promise<string> {
     pPath = pPath.replace(/^\/+/, '') || '';
     const parts = breakUpPathFileName(pPath, options.namePattern);
 

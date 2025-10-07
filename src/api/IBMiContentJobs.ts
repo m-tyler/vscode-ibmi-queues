@@ -69,7 +69,7 @@ export namespace IBMiContentJobs {
     return returnMsgqList;
 
   }
- 
+
   /**
   * Download the contents of a user job details
   * @param {string} user - user of the job to show details
@@ -84,7 +84,7 @@ export namespace IBMiContentJobs {
     const pathParts = uriPath.replace(/^\/+/, '').split('.');
 
     let reportContent: string = ``;
-    const cmd = `DSPJOB job(${pathParts[0]}) OUTPUT(*PRINT) OPTION(${options.printSection?options.printSection:'*ALL'})`;
+    const cmd = `DSPJOB job(${pathParts[0]}) OUTPUT(*PRINT) OPTION(${options.printSection ? options.printSection : '*ALL'})`;
     const cmdResults = await connection.runCommand({
       command: cmd
       , environment: `ile`
@@ -149,59 +149,59 @@ export namespace IBMiContentJobs {
     return returnJobMessageWaits;
   }
   export async function answerMessage(item: IBMiUserJob, userReply?: string): Promise<boolean> {
-      userReply = userReply || '*DFT';
-      let actionCompleteGood: boolean = true;
-      const command = `SNDRPY MSGKEY(${item.jobMessageKey}) MSGQ(${item.jobMessageQueueLibrary}/${item.jobMessageQueueName}) RPY('${userReply}') RMV(*NO)`;
-      const commandResult = await Code4i.runCommand({
-        command: command
-        , environment: `ile`
-      });
-      if (commandResult) {
-        // vscode.window.showInformationMessage(` ${commandResult.stdout}.`);
-        if (commandResult.code === 0 || commandResult.code === null) {
-        } else {
-          actionCompleteGood = false;
-        }
+    userReply = userReply || '*DFT';
+    let actionCompleteGood: boolean = true;
+    const command = `SNDRPY MSGKEY(${item.jobMessageKey}) MSGQ(${item.jobMessageQueueLibrary}/${item.jobMessageQueueName}) RPY('${userReply}') RMV(*NO)`;
+    const commandResult = await Code4i.runCommand({
+      command: command
+      , environment: `ile`
+    });
+    if (commandResult) {
+      // vscode.window.showInformationMessage(` ${commandResult.stdout}.`);
+      if (commandResult.code === 0 || commandResult.code === null) {
+      } else {
+        actionCompleteGood = false;
       }
-  
-      return actionCompleteGood;
     }
+
+    return actionCompleteGood;
+  }
   export async function holdJob(item: IBMiUserJob): Promise<boolean> {
-      let actionCompleteGood: boolean = true;
-      const command = `HLDJOB JOB(${item.jobName}) DUPJOBOPT(*MSG)`;
-      const commandResult = await Code4i.runCommand({
-        command: command
-        , environment: `ile`
-      });
-      if (commandResult) {
-        if (commandResult.stderr.length > 0) {
-          throw new Error(commandResult.stderr);
-        } else {
-          actionCompleteGood = false;
-        }
+    let actionCompleteGood: boolean = true;
+    const command = `HLDJOB JOB(${item.jobName}) DUPJOBOPT(*MSG)`;
+    const commandResult = await Code4i.runCommand({
+      command: command
+      , environment: `ile`
+    });
+    if (commandResult) {
+      if (commandResult.stderr.length > 0) {
+        throw new Error(commandResult.stderr);
       } else {
-         throw new Error(l10n.t(`Error atempting to hold job, ${item.jobName}.`, ));
+        actionCompleteGood = false;
       }
-  
-      return actionCompleteGood;
+    } else {
+      throw new Error(l10n.t(`Error atempting to hold job, ${item.jobName}.`,));
     }
-  export async function releaseJob(item: IBMiUserJob): Promise<boolean> {
-      let actionCompleteGood: boolean = true;
-      const command = `RLSJOB JOB(${item.jobName}) DUPJOBOPT(*MSG)`;
-      const commandResult = await Code4i.runCommand({
-        command: command
-        , environment: `ile`
-      });
-      if (commandResult) {
-        if (commandResult.stderr.length > 0) {
-          throw new Error(commandResult.stderr);
-        } else {
-          actionCompleteGood = false;
-        }
+
+    return actionCompleteGood;
+  }
+  export async function release(item: IBMiUserJob): Promise<boolean> {
+    let actionCompleteGood: boolean = true;
+    const command = `RLSJOB JOB(${item.jobName}) DUPJOBOPT(*MSG)`;
+    const commandResult = await Code4i.runCommand({
+      command: command
+      , environment: `ile`
+    });
+    if (commandResult) {
+      if (commandResult.stderr.length > 0) {
+        throw new Error(commandResult.stderr);
       } else {
-         throw new Error(l10n.t(`Error atempting to release job, ${item.jobName}.`, ));
+        actionCompleteGood = false;
       }
-  
-      return actionCompleteGood;
+    } else {
+      throw new Error(l10n.t(`Error atempting to release job, ${item.jobName}.`,));
     }
+
+    return actionCompleteGood;
+  }
 }

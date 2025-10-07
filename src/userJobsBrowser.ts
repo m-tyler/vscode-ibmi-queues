@@ -29,36 +29,36 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
         isCaseSensitive: false
       }),
       // vscode.commands.registerCommand('vscode-ibmi-queues.userJobBrowser.');
-      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.sortUserJobsByID`, (node: UserList | UserJob) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.sortByID`, (node: UserList | UserJob) => {
         // NOTE: repeated calls will cause asc to desc change in order
         node.sortBy({ order: "name" });
         node.setDescription();
         if (node.contextValue === `userJobJob`) {
-          vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobs`, (node.parent));
+          vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refresh`, (node.parent));
         }
         else {
-          vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobs`, (node));
+          vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refresh`, (node));
         }
         userjobBrowserViewer.reveal(node, { expand: true });
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.sortUserJobsByDate`, (node) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.sortByDate`, (node) => {
         // NOTE: repeated calls will cause asc to desc change in order
         node.sortBy({ order: "date" });
         node.setDescription();
         if (node.contextValue === `userJobJob`) {
-          vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobs`, (node.parent));
+          vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refresh`, (node.parent));
         }
         else {
-          vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobs`, (node));
+          vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refresh`, (node));
         }
         userjobBrowserViewer.reveal(node, { expand: true });
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobBrowser`, () => userjobBrowserObj.refresh()),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobs`, (node) => userjobBrowserObj.refresh(node)),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.revealUserJobsBrowser`, async (item: vscode.TreeItem, options?: FocusOptions) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.refreshBrowser`, () => userjobBrowserObj.refresh()),
+      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.refresh`, (node) => userjobBrowserObj.refresh(node)),
+      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.revealBrowser`, async (item: vscode.TreeItem, options?: FocusOptions) => {
         userjobBrowserViewer.reveal(item, options);
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.addUserJobFilter`, async (node) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.addFilter`, async (node) => {
 
         let newEntry = await vscode.window.showInputBox({
           title: l10n.t(`Select User To Show Jobs For.`),
@@ -69,13 +69,13 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
         newEntry = newEntry!.toLocaleUpperCase();
         try {
           if (newEntry) {
-            if (saveFilterValuesUserJobs({ user: newEntry })) { vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.sortUserJobFilter`, node); }
+            if (saveFilterValuesUserJobs({ user: newEntry })) { vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.sort`, node); }
           }
         } catch (e) {
           // console.log(e);
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.sortUserJobFilter`, async (node) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.sort`, async (node) => {
         const config = Code4i.getConfig();
         let userJobs: IBMiUserJobsFilter[] = config[`userJobs`] || [];
         try {
@@ -94,12 +94,12 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
           config.userJobs = userJobs;
           Code4i.getInstance()!.setConfig(config);
           userjobBrowserObj.populateData(userJobs);
-          vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobBrowser`);
+          vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshBrowser`);
         } catch (e) {
           // console.log(e);
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.removeUserJobFilter`, async (node) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.removeFilter`, async (node) => {
         const config = Code4i.getConfig();
 
         let removeUserEntry: string | undefined;
@@ -130,7 +130,7 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
                     config.userJobs = userJobs;
                     Code4i.getInstance()!.setConfig(config);
                     userjobBrowserObj.populateData(Code4i.getConfig().userJobs);
-                    vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobsBrowser`);
+                    vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshBrowser`);
                   }
                 }
               });
@@ -139,20 +139,20 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
           // console.log(e);
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.filterUserJobsMSGW`, async (node: UserList) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.filterMSGW`, async (node: UserList) => {
         if (node.msgwMode === 'MSGW') {
           // node.setFilter(searchTerm);
           node.setMsgwMode(``);
           node.clearToolTip();
           node.setDescription();
-          vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.revealUserJobsBrowser`, node, { expand: false, focus: true, select: true });
-          vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobs`, node);
+          vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.revealBrowser`, node, { expand: false, focus: true, select: true });
+          vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refresh`, node);
 
         } else {
-          vscode.commands.executeCommand('vscode-ibmi-queues.userJobBrowser.filterUserJobs', node, 'MSGW');
+          vscode.commands.executeCommand('vscode-ibmi-queues.userJobBrowser.filter', node, 'MSGW');
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.filterUserJobs`, async (node, filterToMsgwMode?: string) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.filter`, async (node, filterToMsgwMode?: string) => {
 
         let searchUser: any;
         let searchTerm: any;
@@ -197,7 +197,7 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
 
               if (!userJobNum || userJobNum === 0) {
                 const treeFilter = { ...node };
-                const userJobNumAnswer = await IBMiContentJobs.getUserJobCount(`vscode-ibmi-queues.userJobBrowser.filterUserJobs`, treeFilter, searchTerm, filterToMsgwMode);
+                const userJobNumAnswer = await IBMiContentJobs.getUserJobCount(`vscode-ibmi-queues.userJobBrowser.filter`, treeFilter, searchTerm, filterToMsgwMode);
                 if (Number.isFinite(Number(userJobNumAnswer))) { userJobNum = Number(userJobNumAnswer); }
               }
               if (userJobNum > 0) {
@@ -207,7 +207,7 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
                   node.parent.clearToolTip();
                   node.parent.setFilterDescription(searchTerm ? searchTerm : filterToMsgwMode);
                   node.parent.setDescription();
-                  vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobs`, node.parent);
+                  vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refresh`, node.parent);
                 } else {
                   node.setFilter(searchTerm);
                   node.setMsgwMode(filterToMsgwMode);
@@ -215,8 +215,8 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
                   node.setFilterDescription(searchTerm ? searchTerm : filterToMsgwMode);
                   node.setDescription();
                   // await userjobBrowserObj.getChildren(node);
-                  vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobs`, node);
-                  vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.revealUserJobsBrowser`, node, { expand: true, focus: true, select: true });
+                  vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refresh`, node);
+                  vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.revealBrowser`, node, { expand: true, focus: true, select: true });
                 }
               } else {
                 vscode.window.showErrorMessage(l10n.t(`No user jobs to filter.`));
@@ -232,17 +232,17 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
           if (node.filter) {
             node.setFilter(undefined);
             node.clearToolTip;
-            vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobs`, node);
+            vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refresh`, node);
           }
           if (node.parent.filter) {
             node.parent.setFilter(undefined);
             node.parent.clearToolTip;
-            vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobs`, node.parent);
+            vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refresh`, node.parent);
           }
         }
 
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.viewUserJobDetails`, async (item: UserJob, overrideMode?: DspJobOpenOptions) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.viewDetails`, async (item: UserJob, overrideMode?: DspJobOpenOptions) => {
         let options: DspJobOpenOptions = {};
         options.readonly = item.parent.protected;
         options.printSection = `*ALL`;
@@ -268,7 +268,7 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
         }
 
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.viewUserJobJoblog`, async (item: UserJob, overrideMode?: DspJobOpenOptions) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.viewJoblog`, async (item: UserJob, overrideMode?: DspJobOpenOptions) => {
         let options: DspJobOpenOptions = {};
         options.readonly = item.parent.protected;
         options.printSection = `*JOBLOG`;
@@ -318,7 +318,7 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
               if (!await IBMiContentJobs.answerMessage(item, userReply)) {
 
               }
-              vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobs`, node.parent);
+              vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refresh`, node.parent);
             }
           } else {
             vscode.window.showInformationMessage(l10n.t(`Job not in a state to reply with an answer.`));
@@ -346,14 +346,14 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
             if (!await IBMiContentJobs.holdJob(item)) {
 
             }
-            vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobs`, node.parent);
+            vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refresh`, node.parent);
           }
         } catch (e: any) {
           // console.log(e);
           vscode.window.showErrorMessage(l10n.t(`Error holding job {0}!`, e));
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.ReleaseJob`, async (node) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.release`, async (node) => {
         const item = node as IBMiUserJob;
         try {
           if (item.activeJobStatus && item.activeJobStatus === 'HLD' || item.jobQueueStatus === 'HELD') {
@@ -364,10 +364,10 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
             }, async progress => {
               progress.report({ message: l10n.t(`Attempting to release selected job, ${item.jobName}.`), });
             });
-            if (!await IBMiContentJobs.releaseJob(item)) {
+            if (!await IBMiContentJobs.release(item)) {
 
             }
-            vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobs`, node.parent);
+            vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refresh`, node.parent);
           } else {
             vscode.window.showInformationMessage(l10n.t(`Job not in a state to release.`));
           }
@@ -386,7 +386,7 @@ function run_on_connection() {
 }
 async function run_on_disconnection() {
   userjobBrowserObj.clearTree();
-  vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshUserJobBrowser`);
+  vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshBrowser`);
 }
 
 function updateExtensionStatus(): boolean {

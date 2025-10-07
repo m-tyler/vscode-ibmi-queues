@@ -1,8 +1,8 @@
 
 import { SortOptions } from '@halcyontech/vscode-ibmi-types/api/IBMiContent';
 import vscode, { l10n, TreeDataProvider } from 'vscode';
-import { Code4i } from '../tools';
-import { IBMiContentMsgq, IBMiContentFS, sortObjectArrayByProperty } from "../api/IBMiContentfs";
+import { IBMiContentCommon, sortObjectArrayByProperty } from "../api/IBMiContentCommon";
+import { IBMiContentMsgq } from "../api/IBMiContentMsgQ";
 import { IBMiMessageQueue, IBMiMessageQueueFilter, IBMiMessageQueueMessage, ObjAttributes, ObjLockState } from '../typings';
 import { getMessageDetailFileUri } from '../filesystem/qsys/MsgQFs';
 
@@ -72,8 +72,8 @@ export default class MSGQBrowser implements TreeDataProvider<any> {
         const distinctNames: string[] = [...new Set(filtereditems.map(item => item.messageQueue))];
         const distinctLibraries: string[] = [...new Set(filtereditems.map(item => item.messageQueueLibrary))];
         const distinctTypes: string[] = [...new Set(filtereditems.map(item => item.type || '*MSGQ'))];
-        const objAttributes = await IBMiContentFS.getObjectText(distinctNames, distinctLibraries, distinctTypes);
-        const objLockStates = await IBMiContentFS.getObjectLocks(distinctNames, distinctLibraries, distinctTypes);
+        const objAttributes = await IBMiContentCommon.getObjectText(distinctNames, distinctLibraries, distinctTypes);
+        const objLockStates = await IBMiContentCommon.getObjectLocks(distinctNames, distinctLibraries, distinctTypes);
         const mesageQueues = this._msgqFilters.map((aMsgq) =>
         ({
           messageQueueLibrary: lookupLibraryValue(aMsgq, objAttributes),
@@ -153,7 +153,7 @@ export default class MSGQBrowser implements TreeDataProvider<any> {
         item.setRecordCount(item.messageCount);
       }
       if (!item.text) {
-        const objAttributes = await IBMiContentFS.getObjectText([element.messageQueue], [element.messageQueueLibrary], [`*MSGQ`]) || '';
+        const objAttributes = await IBMiContentCommon.getObjectText([element.messageQueue], [element.messageQueueLibrary], [`*MSGQ`]) || '';
         item.text = objAttributes[0].text;
         item.setDescription();
       }

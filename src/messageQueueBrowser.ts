@@ -2,7 +2,8 @@
 import { FocusOptions } from '@halcyontech/vscode-ibmi-types/';
 import vscode, { l10n, } from 'vscode';
 import { MsgqFS, getUriFromPathMsg, parseFSOptions } from './filesystem/qsys/MsgQFs';
-import { IBMiContentMsgq, IBMiContentFS, sortObjectArrayByProperty } from "./api/IBMiContentfs";
+import { IBMiContentCommon, sortObjectArrayByProperty } from "./api/IBMiContentCommon";
+import { IBMiContentMsgq } from "./api/IBMiContentMsgQ";
 import { Code4i } from './tools';
 import { IBMiMessageQueue, IBMiMessageQueueFilter, IBMiMessageQueueMessage, MsgOpenOptions, SearchParms } from './typings';
 import MSGQBrowser, { MessageQueue, MessageQueueList } from './views/messageQueueView';
@@ -73,7 +74,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
           if (newEntry) {
             const newEntryParts = newEntry.trim().toLocaleUpperCase().split('/');
             if (newEntryParts.length === 1) {
-              const objAttributes = await IBMiContentFS.getObjectText(newEntryParts, [`*LIBL`], ['*MSGQ']);
+              const objAttributes = await IBMiContentCommon.getObjectText(newEntryParts, [`*LIBL`], ['*MSGQ']);
               newFilter = { messageQueueLibrary: objAttributes[0].library, messageQueue: newEntryParts[0], type: '*MSGQ' };
             }
             else {
@@ -101,7 +102,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
           if (newEntry) {
             const x: string[] = newEntry.trim().toLocaleUpperCase().split('/');
             if (x.length === 1) { // no library given
-              const objAttributes = await IBMiContentFS.getObjectText([newEntry], [`*LIBL`], ['*USRPRF']);
+              const objAttributes = await IBMiContentCommon.getObjectText([newEntry], [`*LIBL`], ['*USRPRF']);
               newFilter = { messageQueueLibrary: objAttributes[0].library, messageQueue: newEntry, type: '*USRPRF' };
             }
             else {

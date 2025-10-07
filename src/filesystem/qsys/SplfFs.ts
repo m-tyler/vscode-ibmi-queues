@@ -101,7 +101,7 @@ export class SplfFS implements vscode.FileSystemProvider {
         namePattern: `name,jobName,jobUser,jobNumber,number`
       } as SplfOpenOptions;
       const openOptions = mergeObjects(options, queryStrings);
-      const spooledFileContent = await IBMiContentSplf.downloadSpooledFileContent(uri.path, openOptions);
+      const spooledFileContent = await IBMiContentSplf.downloadContent(uri.path, openOptions);
       if (spooledFileContent !== undefined) {
         return new Uint8Array(Buffer.from(spooledFileContent, `utf8`));
       }
