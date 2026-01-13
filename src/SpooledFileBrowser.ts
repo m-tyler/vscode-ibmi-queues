@@ -54,7 +54,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
     }),
     vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser2.addUserFilter`, async () => {
       const config = getConnection().getConfig();
-      const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-splfbrowser');
+      const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser');
       let mySpooledFileConfig = myConfig[`spooledFileFilters`] || [];
       let SpooledFileConfig = config[`SpooledFileConfig`] || [];
 
@@ -91,7 +91,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
     vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser2.addOUTQFilter`, async () => {
       const connection = getConnection();
       const config = connection.getConfig();
-      const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-splfbrowser');
+      const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser');
 
       let mySpooledFileConfig = myConfig[`spooledFileFilters`] || [];
       let SpooledFileConfig = config[`SpooledFileConfig`] || [];

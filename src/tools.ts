@@ -109,7 +109,7 @@ export function buildPathFileNamefromPattern(filterType: string, splf: IBMiSpool
   }
   let counter = 0;
   // get from config
-  const splfBrowserConfig = vscode.workspace.getConfiguration('vscode-ibmi-splfbrowser');
+  const splfBrowserConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser');
   let namePattern: string = splfBrowserConfig.get<string>('spooledFileNamePattern') || '';
   if (namePattern.length === 0) { namePattern = `name,jobName,jobUser,jobNumber,number`; }
   // pattern values are separated by commas.
@@ -173,13 +173,13 @@ export function buildPathFileNamefromPattern(filterType: string, splf: IBMiSpool
   return newName;
 }
 export function getMyConfig(configName: string) {
-  const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-splfbrowser');
+  const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser');
   let mySpooledConfig: string = myConfig.get<string>(`${configName}`) || '';
 
   return mySpooledConfig;
 }
 export function breakUpPathFileName(pPath: string, namePattern?: string): Map<string, string> {
-  const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-splfbrowser');
+  const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser');
   namePattern = namePattern || myConfig.get<string>('spooledFileNamePattern') || '';
   if (namePattern.length === 0) { namePattern = `name,jobName,jobUser,jobNumber,number`; }
 
