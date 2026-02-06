@@ -20,14 +20,14 @@
         "title":"Code for IBM i Queues - Spooled Files",
         "properties":{
           "vscode-ibmi-queues.splfBrowser.openWithLineSpacing":{"type":"boolean","markdownDescription":"When checked, the default open will be with line spacing option."},
-          "vscode-ibmi-queues.splfBrowser.NamePattern":{
+          "vscode-ibmi-queues.splfBrowser.namePattern":{
             "type":"string",
             "markdownDescription":"Additional Spooled File name mapping pattern for when Spooled Files are opened or downloaded.\n\nValid values to choose from; \n- `name` \n- `number` \n- `status` \n- `creationTimestamp` \n- `userData` \n- `size` \n- `totalPages` \n- `pageLength` \n- `qualifiedJobName` \n- `jobName` \n- `jobUser` \n- `jobNumber` \n- `formType` \n- `queueLibrary` \n- `queue` \n\nSeparate selections with commas (,). You must reload the Spooled File list for these changes to take affect.",
             "default":"name, jobName, jobUser, jobNumber, number"
           },
-          "vscode-ibmi-queues.splfBrowser.TempCleanup":{"type":"boolean","markdownDescription":"When checked and VS Code closes, clean up left over temp Spooled Files from users %TMP% folder."},
+          "vscode-ibmi-queues.splfBrowser.tempCleanup":{"type":"boolean","markdownDescription":"When checked and VS Code closes, clean up left over temp Spooled Files from users %TMP% folder."},
           "vscode-ibmi-queues.splfBrowser.enabled":{"type":"boolean","default":true,"description":"Enable or disable Spooled File Browser."},
-          "vscode-ibmi-queues.splfbrowser.spooledFileFilters":{"type":"array","markdownDescription":"Array of USER or OUTQ names to load spooled files from"}
+          "vscode-ibmi-queues.splfbrowser.filters":{"type":"array","markdownDescription":"Array of USER or OUTQ names to load spooled files from"}
         }
       },
       {
@@ -40,7 +40,7 @@
       }
     ],
     "viewsContainers":{
-      "activitybar":[ {"id":"SpooledFile-search","title":"Spooled Files","icon":"$(files)"},{"id":"MessageQueue-search","title":"Message Queue Messages","icon":"$(email)","when":"config.vscode-ibmi-queues.msgqBrowser"} ]
+      "activitybar":[ {"id":"new-SpooledFile-search","title":"Spooled Files","icon":"$(files)"},{"id":"MessageQueue-search","title":"Message Queue Messages","icon":"$(email)","when":"config.vscode-ibmi-queues.msgqBrowser"} ]
     },
     "views":{
       "ibmi-explorer":[
@@ -48,7 +48,7 @@
         {"id":"msgqBrowser",    "name":"-NEW- Message Queue Browser","when":"code-for-ibmi:connected && vscode-ibmi-queues.msgqBrowser2:msgqBrowserDisabled !== true",     "visibility":"collapsed","icon":""},
         {"id":"userJobBrowser", "name":"-NEW- User Jobs Browser",    "when":"code-for-ibmi:connected && vscode-ibmi-queues.userJobBrowser:userJobBrowserDisabled !== true","visibility":"collapsed","icon":""}
       ],
-      "SpooledFile-search":[ {"id":"SpooledFileSearchView-2","name":"SPLF-Search_Results","when":"vscode-ibmi-queues.new-splfbrowser:searchViewVisible","icon":""} ],
+      "new-SpooledFile-search":[ {"id":"SpooledFileSearchView-2","name":"SPLF-Search_Results","when":"vscode-ibmi-queues.new-SpooledFile-search:searchViewVisible","icon":""} ],
       "MessageQueue-search":[ {"id":"MsgqSearchView","name":"MSGQ-Search_Results","when":"vscode-ibmi-queues.MsgqSearchView:searchViewVisible && config.vscode-ibmi-queues.msgqBrowser","icon":""} ]
     },
     "commands":[

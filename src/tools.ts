@@ -4,7 +4,8 @@ import { FilterType } from '@halcyontech/vscode-ibmi-types/api/Filter';
 import { SortOrder } from '@halcyontech/vscode-ibmi-types/api/IBMiContent';
 import { Tools } from '@halcyontech/vscode-ibmi-types/api/Tools';
 import vscode from "vscode";
-import { FuncInfo, IBMiSpooledFile, SplfOpenOptions } from './typings';
+import { FuncInfo, IBMiSpooledFile, SplfOpenOptions, SpooledFileConfig, IBMISplfList } from './typings';
+
 import { posix } from "path";
 import { loadBase, getBase } from './base';
 
@@ -110,7 +111,7 @@ export function buildPathFileNamefromPattern(filterType: string, splf: IBMiSpool
   let counter = 0;
   // get from config
   const splfBrowserConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser');
-  let namePattern: string = splfBrowserConfig.get<string>('spooledFileNamePattern') || '';
+  let namePattern: string = splfBrowserConfig.get<string>('namePattern') || '';
   if (namePattern.length === 0) { namePattern = `name,jobName,jobUser,jobNumber,number`; }
   // pattern values are separated by commas.
   const patterns = namePattern.split(/,\s*/);
@@ -180,7 +181,7 @@ export function getMyConfig(configName: string) {
 }
 export function breakUpPathFileName(pPath: string, namePattern?: string): Map<string, string> {
   const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser');
-  namePattern = namePattern || myConfig.get<string>('spooledFileNamePattern') || '';
+  namePattern = namePattern || myConfig.get<string>('n') || '';
   if (namePattern.length === 0) { namePattern = `name,jobName,jobUser,jobNumber,number`; }
 
   // pattern values are separated by commas.
@@ -420,4 +421,30 @@ function getSource(func: string, library: string) {
     return Buffer.from([``].join(`\n`), "utf8");
   // break;
   }
+}
+export async function updateSpooledFileConfig(serverName: string, newItems: IBMISplfList[]) {
+    const config = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser');
+    
+    // 1. Get the current array of config objects
+    // Pattern: [{ dev: [...] }, { PROD: [...] }]
+    let configList = config.get<SpooledFileConfig[]>('filters') || [];
+
+    // 2. Find if the server key already exists in any of the objects
+    const existingIndex = configList.findIndex(item => item.hasOwnProperty(serverName));
+
+    if (existingIndex !== -1) {
+        // Update existing server entry
+        configList[existingIndex][serverName] = newItems;
+    } else {
+        // Add a new entry if it doesn't exist
+        configList.push({ [serverName]: newItems });
+    }
+
+    // 3. Store back to settings (Global target for User settings)
+    await config.update('filters', configList, vscode.ConfigurationTarget.Global);
+}
+export function getConfigForServer(serverName: string): IBMISplfList[] | undefined {
+    const configList = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser').get<SpooledFileConfig[]>('filters') || [];
+    const serverObj = configList.find(item => item[serverName]);
+    return serverObj ? serverObj[serverName] : undefined;
 }

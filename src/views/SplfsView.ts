@@ -3,7 +3,7 @@ import { SortOptions } from '@halcyontech/vscode-ibmi-types/api/IBMiContent';
 import vscode, { l10n, TreeDataProvider } from 'vscode';
 import { IBMiContentSplf } from "../api/IBMiContentSplf";
 import { getSpooledFileUri } from '../filesystem/qsys/SplfFs';
-import { Code4i } from '../tools';
+import { Code4i, getConfigForServer } from '../tools';
 import { IBMISplfList, IBMiSpooledFile, SplfOpenOptions } from '../typings';
 
 
@@ -19,7 +19,7 @@ const objectIcons: Record<string, string> = {
 export default class SPLFBrowser implements TreeDataProvider<any> {
   private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null | void>;
   public onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null | void>;
-  private data: IBMISplfList[] = []; // Your data storage
+  private _userFilters: IBMISplfList[] = [];
 
   constructor() {
     this._onDidChangeTreeData = new vscode.EventEmitter();
@@ -31,13 +31,18 @@ export default class SPLFBrowser implements TreeDataProvider<any> {
   }
   // Method to set data when your extension becomes connected
   public populateData(newData: IBMISplfList[]): void {
-    this.data = newData;
+    this._userFilters = newData;
     this._onDidChangeTreeData.fire(); // Notify VS Code to refresh
   }
 
   // Method to clear the tree view
-  public clearTree(): void {
-    this.data = []; // Clear the data
+  public clearTree(oldData?: IBMISplfList): void {
+    if (oldData) {
+      const tempArray = this._userFilters.filter(obj => obj.name !== oldData.name);
+      this._userFilters = tempArray;
+    } else {
+      this._userFilters = []; // Clear the data
+    }
     this._onDidChangeTreeData.fire(); // Notify VS Code to refresh
   }
 
@@ -55,11 +60,9 @@ export default class SPLFBrowser implements TreeDataProvider<any> {
    */
   async getChildren(element: any) {
     const items = [];
-    const connection = getConnection();
+    const connection = Code4i.getConnection();
     if (connection) {
-      // const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser2.spooledFileFilters');
-
-      const config = getConfig();
+      const config = getConfigForServer(Code4i.getConfig().name)||[];
 
       if (element) {
         // let filter;
@@ -82,13 +85,8 @@ export default class SPLFBrowser implements TreeDataProvider<any> {
           break;
         }
 
-        // } else if (this.data) { // no context exists in tree yet, get from settings if present
-        // items.push( ...this.data.map(
-        //     (theFilter: IBMISplfList) => new SpooledFileFilter(`splflist`, element, theFilter, connection.currentUser)
-        //   ));
-        // }
-      } else if (config.SpooledFileConfig) { // no context exists in tree yet, get from settings if present
-        items.push(...config.SpooledFileConfig.map(
+      } else if (config) { // no context exists in tree yet, get from settings if present
+        items.push(...config.map(
           (theFilter: IBMISplfList) => new SpooledFileFilter(`splflist`, element, theFilter, connection.currentUser)
         ));
       }
@@ -327,35 +325,6 @@ export class SpooledFiles extends vscode.TreeItem implements IBMiSpooledFile {
   }
 }
 
-function getConfig() {
-  const config = Code4i.getConfig();
-  if (config) {
-    return config;
-  }
-  else {
-    throw new Error(l10n.t('Not connected to an IBM i'));
-  }
-}
-
-function getConnection() {
-  const connection = Code4i.getConnection();
-  if (connection) {
-    return connection;
-  }
-  else {
-    throw new Error(l10n.t('Not connected to an IBM i'));
-  }
-}
-
-function getContent() {
-  const content = Code4i.getContent();
-  if (content) {
-    return content;
-  }
-  else {
-    throw new Error(l10n.t('Not connected to an IBM i'));
-  }
-}
 function formatToolTip(label: string, obj: Record<string, any>): string {
   const md = Object.entries(obj)
     .map(([key, val]) => `<tr><td>${l10n.t(`${label}:`)}</td><td>&nbsp;${l10n.t(val)}</td></tr>`

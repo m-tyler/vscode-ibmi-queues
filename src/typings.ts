@@ -22,8 +22,19 @@ export interface IBMISplfList {
   name: string
   library: string
   text?: string
-  type: string
+  // type: string
+  type: 'USER' | 'OUTQ';
 }  
+export interface SpooledFileConfigItem {
+    name: string;
+    library: string;
+    type: 'USER' | 'OUTQ';
+}
+export interface SpooledFileConfig {
+    // Dynamic keys like 'dev' or 'PROD' map to arrays of config items
+    [serverConnectionName: string]: IBMISplfList[];
+    // [serverConnectionName: string]: SpooledFileConfigItem[];
+}
 export interface IBMiSplfCounts {
   numberOf: string
   totalPages: string

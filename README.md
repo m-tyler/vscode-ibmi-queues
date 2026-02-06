@@ -26,8 +26,8 @@ Has support for:
 
 ## Extension Settings
 
-* `vscode-ibmi-queues.spooledFileNamePattern`: Additional Spooled File name mapping pattern for when Spooled Files are opened or downloaded.
-* `vscode-ibmi-queues.tempSpooledFileCleanup`: When checked and VS Code closes, clean up left over temp Spooled Files from users %TMP% folder.
+* `vscode-ibmi-queues.splfBrowser.namePattern`: Additional Spooled File name mapping pattern for when Spooled Files are opened or downloaded.
+* `vscode-ibmi-queues.splfBrowser.tempCleanup`: When checked and VS Code closes, clean up left over temp Spooled Files from users %TMP% folder.
 * `vscode-ibmi-queues.splfBrowser.openWithLineSpacing`: When checked the default open option will be with extra blanks lines added.
  Configurations to show or hide a certain feature of this extension.
 * `vscode-ibmi-queues.splfBrowser.enabled`: Allows user to have viewer appear and function or just be hidden.
