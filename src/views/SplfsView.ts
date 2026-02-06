@@ -10,8 +10,8 @@ import { IBMiContentCommon, sortObjectArrayByProperty } from "../api/IBMiContent
 
 //https://code.visualstudio.com/api/references/icons-in-labels
 const objectIcons: Record<string, string> = {
-  'outq': 'server',
-  'user': 'server',
+  '*outq': 'server',
+  '*usrprf': 'server',
   'splf': 'file',
   // eslint-disable-next-line @typescript-eslint/naming-convention
   '': 'circle-large-outline'
@@ -351,7 +351,10 @@ function formatToolTip(label: string, obj: Record<string, any>): string {
 function lookupItemText(aFilter: IBMISplfList, objAttributes: ObjAttributes[]): string {
   let index = 0;
   let theText = '';
-  index = objAttributes.findIndex(f => f.name === aFilter.name && f.type === aFilter.type);
+  index = objAttributes.findIndex(oa => oa.name === aFilter.name && oa.type === aFilter.type);
+  if (index === -1) {
+    index = objAttributes.findIndex(oa => oa.name === aFilter.name && aFilter.text);
+  }
   if (index >= 0) {
     theText = objAttributes[index].text;
   }

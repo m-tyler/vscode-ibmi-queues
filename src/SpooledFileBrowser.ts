@@ -69,7 +69,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
           const newUserSplfs = userInput.trim().toUpperCase().toUpperCase().split(`/`);
           const i = newUserSplfs.length;
           // Split value
-          const newEntry: IBMISplfList = { name: newUserSplfs[i - 1], library: i > 1 ? newUserSplfs[i - 1] : '*LIBL', type: 'USER' };
+          const newEntry: IBMISplfList = { name: newUserSplfs[i - 1], library: i > 1 ? newUserSplfs[i - 1] : '*LIBL', type: '*USRPRF' };
 
           if (!splfConfig.includes(newEntry)) {
             splfConfig.push(newEntry);

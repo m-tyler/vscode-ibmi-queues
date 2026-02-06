@@ -47,9 +47,9 @@ export namespace IBMiContentSplf {
     if (!sort.ascending) { sort.ascending = false; }
     resultLimit = resultLimit || 10000;
     let queryParm = ``;
-    if (treeFilter.type === 'USER') {
+    if (treeFilter.type === '*USRPRF') {
       queryParm = `USER_NAME => '${treeFilter.name}'`;
-    } else if (treeFilter.type === 'OUTQ') {
+    } else if (treeFilter.type === '*OUTQ') {
       queryParm = `USER_NAME=> '*ALL', OUTPUT_QUEUE => '${treeFilter.library}/${treeFilter.name}'`;
     }
 
@@ -291,13 +291,13 @@ export namespace IBMiContentSplf {
     let query = ``;
     const searchFilterU = searchFilter?.toLocaleUpperCase() || '';
     let queryParm = ``;
-    if (treeFilter.type === 'USER') {
+    if (treeFilter.type === '*USRPRF') {
       queryParm = `USER_NAME => '${treeFilter.name}'`;
-    } else if (treeFilter.type === 'OUTQ') {
+    } else if (treeFilter.type === '*OUTQ') {
       queryParm = `USER_NAME=> '*ALL', OUTPUT_QUEUE => '${treeFilter.library}/${treeFilter.name}'`;
     }
 
-    if (treeFilter.type === 'USER' || treeFilter.type === 'OUTQ' && searchFilter) {
+    if (treeFilter.type === '*USRPRF' || treeFilter.type === '*OUTQ' && searchFilter) {
       query = `select count(*) SPLF_COUNT, sum(TOTAL_PAGES) TOTAL_PAGES
         from table (QSYS2.SPOOLED_FILE_INFO(${queryParm}) ) SPE 
         where FILE_AVAILABLE = '*FILEEND' 
@@ -314,7 +314,7 @@ export namespace IBMiContentSplf {
                               or ucase(SPE.OUTPUT_QUEUE) like '%${searchFilterU}%'
                         )` : ''}
         `.replace(/\n\s*/g, ' ');
-    } else if (treeFilter.type === 'OUTQ' && !searchFilter) {
+    } else if (treeFilter.type === '*OUTQ' && !searchFilter) {
       query = `select NUMBER_OF_FILES SPLF_COUNT, 0 TOTAL_PAGES 
       from QSYS2.OUTPUT_QUEUE_INFO OQ
       ${treeFilter.library === `*LIBL` ? `inner join QSYS2.LIBRARY_LIST_INFO LL on OQ.OUTPUT_QUEUE_LIBRARY_NAME = LL.SYSTEM_SCHEMA_NAME` : ``}
@@ -334,7 +334,7 @@ export namespace IBMiContentSplf {
    * 
    * @param {string[]} name one or more Filter names
    * @param {string} library optional, Filter by library
-   * @param {string} type optional, Filter by type, `USER` or `OUTQ`
+   * @param {string} type optional, Filter by type, `*USRPRF` or `*OUTQ`
    * @returns a promised array of type, {@link IBMISplfList} 
   */
   export async function getFilterDescription(names: string[], library?: string, type?: string): Promise<IBMISplfList[]> {
@@ -348,7 +348,7 @@ export namespace IBMiContentSplf {
     }
     const objQuery = `select UT.OBJTEXT OBJECT_TEXT, OBJNAME, OBJLIB
     from table ( QSYS2.OBJECT_STATISTICS(OBJECT_SCHEMA => '${library}'
-                                      , OBJTYPELIST => '${type === `OUTQ` ? `*OUTQ` : `*USRPRF,*MSGQ`}'
+                                      , OBJTYPELIST => '${type === `*OUTQ` ? `*OUTQ` : `*USRPRF,*MSGQ`}'
                                       , OBJECT_NAME => '*ALL') ) UT where OBJNAME in (${OBJS})
     `.replace(/\n\s*/g, ' ');
     let results = await Code4i.runSQL(objQuery);
