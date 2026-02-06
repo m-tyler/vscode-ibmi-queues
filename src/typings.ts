@@ -22,8 +22,8 @@ export interface IBMISplfList {
   name: string
   library: string
   text?: string
-  // type: string
-  type: 'USER' | 'OUTQ';
+  type: string
+  // type: 'USER' | 'OUTQ';
 }  
 export interface SpooledFileConfigItem {
     name: string;
@@ -155,6 +155,7 @@ export interface ObjAttributes {
   library:string
   name:string
   text: string
+  type: string
 }
 export interface SearchParms {
   messageQueue: string | undefined,

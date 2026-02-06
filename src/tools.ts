@@ -110,7 +110,7 @@ export function buildPathFileNamefromPattern(filterType: string, splf: IBMiSpool
   }
   let counter = 0;
   // get from config
-  const splfBrowserConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser');
+  const splfBrowserConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfBrowser');
   let namePattern: string = splfBrowserConfig.get<string>('namePattern') || '';
   if (namePattern.length === 0) { namePattern = `name,jobName,jobUser,jobNumber,number`; }
   // pattern values are separated by commas.
@@ -174,13 +174,13 @@ export function buildPathFileNamefromPattern(filterType: string, splf: IBMiSpool
   return newName;
 }
 export function getMyConfig(configName: string) {
-  const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser');
+  const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfBrowser');
   let mySpooledConfig: string = myConfig.get<string>(`${configName}`) || '';
 
   return mySpooledConfig;
 }
 export function breakUpPathFileName(pPath: string, namePattern?: string): Map<string, string> {
-  const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser');
+  const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfBrowser');
   namePattern = namePattern || myConfig.get<string>('n') || '';
   if (namePattern.length === 0) { namePattern = `name,jobName,jobUser,jobNumber,number`; }
 
@@ -422,29 +422,31 @@ function getSource(func: string, library: string) {
   // break;
   }
 }
-export async function updateSpooledFileConfig(serverName: string, newItems: IBMISplfList[]) {
-    const config = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser');
-    
-    // 1. Get the current array of config objects
-    // Pattern: [{ dev: [...] }, { PROD: [...] }]
-    let configList = config.get<SpooledFileConfig[]>('filters') || [];
+export async function updateFilterConfigForServer(configurationSection: string, serverName: string, newItems: IBMISplfList[]) {
+  const configurationItem = `vscode-ibmi-queues.${configurationSection}`;
+  const config = vscode.workspace.getConfiguration(configurationItem);
 
-    // 2. Find if the server key already exists in any of the objects
-    const existingIndex = configList.findIndex(item => item.hasOwnProperty(serverName));
+  // 1. Get the current array of config objects
+  // Pattern: [{ dev: [...] }, { PROD: [...] }]
+  let configList = config.get<SpooledFileConfig[]>('filters') || [];
 
-    if (existingIndex !== -1) {
-        // Update existing server entry
-        configList[existingIndex][serverName] = newItems;
-    } else {
-        // Add a new entry if it doesn't exist
-        configList.push({ [serverName]: newItems });
-    }
+  // 2. Find if the server key already exists in any of the objects
+  const existingIndex = configList.findIndex(item => item.hasOwnProperty(serverName));
 
-    // 3. Store back to settings (Global target for User settings)
-    await config.update('filters', configList, vscode.ConfigurationTarget.Global);
+  if (existingIndex !== -1) {
+    // Update existing server entry
+    configList[existingIndex][serverName] = newItems;
+  } else {
+    // Add a new entry if it doesn't exist
+    configList.push({ [serverName]: newItems });
+  }
+
+  // 3. Store back to settings (Global target for User settings)
+  await config.update('filters', configList, vscode.ConfigurationTarget.Global);
 }
-export function getConfigForServer(serverName: string): IBMISplfList[] | undefined {
-    const configList = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser').get<SpooledFileConfig[]>('filters') || [];
+export function getFilterConfigForServer(configurationSection: string, serverName: string): IBMISplfList[] | undefined {
+    const configurationItem = `vscode-ibmi-queues.${configurationSection}`;
+    const configList = vscode.workspace.getConfiguration(configurationItem).get<SpooledFileConfig[]>('filters') || [];
     const serverObj = configList.find(item => item[serverName]);
     return serverObj ? serverObj[serverName] : undefined;
 }

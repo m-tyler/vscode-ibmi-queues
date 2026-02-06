@@ -3,7 +3,7 @@ import { FocusOptions } from '@halcyontech/vscode-ibmi-types/';
 import vscode, { l10n, } from 'vscode';
 import { UsrJobFS, getUriFromPathMsg, parseFSOptions } from "./filesystem/qsys/UsrJobFs";
 import { IBMiContentJobs } from "./api/IBMiContentJobs";
-import { Code4i } from "./tools";
+import { Code4i, mergeObjects, numberToWords, toTitleCase, getFilterConfigForServer, updateFilterConfigForServer } from "./tools";
 import { IBMiUserJobsFilter, DspJobOpenOptions, IBMiUserJob } from './typings';
 import UsrJobBrowser, { UserJob, UserList } from './views/userJobsView';
 
@@ -78,6 +78,7 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
       vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.sort`, async (node) => {
         const config = Code4i.getConfig();
         let userJobs: IBMiUserJobsFilter[] = config[`userJobs`] || [];
+        // const userJobs = getFilterConfigForServer('splfBrowser', config.name) || [];
         try {
           userJobs.sort((filter1, filter2) => {
             // const primarySort = filter1.user.toLowerCase().localeCompare(filter2.user.toLowerCase());
@@ -104,6 +105,7 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
 
         let removeUserEntry: string | undefined;
         let userJobs: IBMiUserJobsFilter[] = config[`userJobs`] || [];
+        // const splfConfig = getFilterConfigForServer('splfBrowser', config.name) || [];
         let msgBoxList: string[] = [``];
 
         if (node) {
@@ -400,12 +402,14 @@ function updateExtensionStatus(): boolean {
 function saveFilterValuesUserJobs(singleFilter: IBMiUserJobsFilter): boolean {
   const config = Code4i.getConfig();
   let userJobs: IBMiUserJobsFilter[] = config[`userJobs`] || [];
+  const splfConfig = getFilterConfigForServer('splfBrowser', config.name) || [];
   const foundFilter = userJobs.find(userJob => userJob.user === singleFilter.user);
 
   if (!foundFilter) {
     userJobs.push(singleFilter);
     config.userJobs = userJobs;
     Code4i.getInstance()!.setConfig(config);
+    // await updateFilterConfigForServer('splfBrowser', config.name, splfConfig);
     return true;
   }
   return false;

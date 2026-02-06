@@ -8,7 +8,7 @@ export class TempFileManager {
 
   constructor() {
     this.tempFiles = new Set<string>();
-    this.trackAndCleanupTmp = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfbrowser').get<boolean>('tempCleanup') || false;
+    this.trackAndCleanupTmp = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfBrowser').get<boolean>('tempCleanup') || false;
   }
 
   /**

@@ -27,7 +27,7 @@
           },
           "vscode-ibmi-queues.splfBrowser.tempCleanup":{"type":"boolean","markdownDescription":"When checked and VS Code closes, clean up left over temp Spooled Files from users %TMP% folder."},
           "vscode-ibmi-queues.splfBrowser.enabled":{"type":"boolean","default":true,"description":"Enable or disable Spooled File Browser."},
-          "vscode-ibmi-queues.splfbrowser.filters":{"type":"array","markdownDescription":"Array of USER or OUTQ names to load spooled files from"}
+          "vscode-ibmi-queues.splfBrowser.filters":{"type":"array","markdownDescription":"Array of USER or OUTQ names to load spooled files from"}
         }
       },
       {
@@ -44,7 +44,7 @@
     },
     "views":{
       "ibmi-explorer":[
-        {"id":"new-splfBrowser","name":"-NEW- Spooled File Browser", "when":"code-for-ibmi:connected && vscode-ibmi-queues.new-splfbrowser:splfBrowserDisabled !== true ", "visibility":"collapsed","icon":""},
+        {"id":"new-splfBrowser","name":"-NEW- Spooled File Browser", "when":"code-for-ibmi:connected && vscode-ibmi-queues.new-splfBrowser:splfBrowserDisabled !== true ", "visibility":"collapsed","icon":""},
         {"id":"msgqBrowser",    "name":"-NEW- Message Queue Browser","when":"code-for-ibmi:connected && vscode-ibmi-queues.msgqBrowser2:msgqBrowserDisabled !== true",     "visibility":"collapsed","icon":""},
         {"id":"userJobBrowser", "name":"-NEW- User Jobs Browser",    "when":"code-for-ibmi:connected && vscode-ibmi-queues.userJobBrowser:userJobBrowserDisabled !== true","visibility":"collapsed","icon":""}
       ],
@@ -56,12 +56,12 @@
       {"command":"vscode-ibmi-queues.splfbrowser2.search","enablement":"code-for-ibmi:connected","title":"Search Spooled Files","category":"IBM i SPLF","icon":"$(search-fuzzy)"},
       {"command":"vscode-ibmi-queues.splfbrowser2.addUserFilter","title":"Add User Spooled File Filter","category":"IBM i SPLF","enablement":"code-for-ibmi:connected == true","icon":"$(person-add)"},
       {"command":"vscode-ibmi-queues.splfbrowser2.addOUTQFilter","title":"Add OUTQ Spooled File Filter","category":"IBM i SPLF","enablement":"code-for-ibmi:connected == true","icon":"$(add)"},
-      {"command":"vscode-ibmi-queues.splfbrowser2.deleteFilter","title":"Delete Spooled File Filter","category":"IBM i SPLF","enablement":"code-for-ibmi:connected == true","icon":"$(trash)"},
+      {"command":"vscode-ibmi-queues.splfbrowser2.removeFilter","title":"Remove Spooled File Filter","category":"IBM i SPLF","enablement":"code-for-ibmi:connected == true","icon":"$(trash)"},
       {"command":"vscode-ibmi-queues.splfbrowser2.deleteAll","title":"Delete All Spooled Files","category":"IBM i SPLF","enablement":"code-for-ibmi:connected == true","icon":"$(trash)"},
       {"command":"vscode-ibmi-queues.splfbrowser2.sortFilter","title":"Sort Filters","category":"IBM i SPLF","enablement":"code-for-ibmi:connected == true","icon":"$(list-ordered)"},
       {"command":"vscode-ibmi-queues.splfbrowser2.delete","title":"Delete SELECTED Spooled File","enablement":"code-for-ibmi:connected","icon":"$(trash)"},
       {"command":"vscode-ibmi-queues.splfbrowser2.deleteNamed","title":"Delete like NAMED Spooled Files","enablement":"code-for-ibmi:connected","icon":"$(trash)"},
-      {"command":"vscode-ibmi-queues.splfbrowser2.deleteFiltered","title":"Delete like FILTERED Spooled Files","enablement":"code-for-ibmi:connected","icon":"$(trash)"},
+      {"command":"vscode-ibmi-queues.splfbrowser2.removeFiltered","title":"Delete like FILTERED Spooled Files","enablement":"code-for-ibmi:connected","icon":"$(trash)"},
       {"command":"vscode-ibmi-queues.splfbrowser2.move","title":"Move to New Output Queue","enablement":"code-for-ibmi:connected","icon":"$(move)"},
       {"command":"vscode-ibmi-queues.splfbrowser2.downloadDefault","title":"without Line Spacing","enablement":"code-for-ibmi:connected","icon":"$(down)"},
       {"command":"vscode-ibmi-queues.splfbrowser2.downloadWithLineSpacing","title":"with Line Spacing","enablement":"code-for-ibmi:connected","icon":"$(down)"},
@@ -170,15 +170,15 @@
       "view/item/context":[
         {"command":"vscode-ibmi-queues.splfbrowser2.refreshBrowser"       ,"when":"view == new-splfBrowser && viewItem =~ /^splflist.*$/","group":"inline@1"},
         {"command":"vscode-ibmi-queues.splfbrowser2.filter"               ,"when":"view == new-splfBrowser && viewItem =~ /^splflist.*$/","group":"inline@2"},
-        {"command":"vscode-ibmi-queues.splfbrowser2.deleteFilter"         ,"when":"view == new-splfBrowser && viewItem =~ /^splflist.*$/","group":"inline@3"},
+        {"command":"vscode-ibmi-queues.splfbrowser2.removeFilter"         ,"when":"view == new-splfBrowser && viewItem =~ /^splflist.*$/","group":"inline@3"},
         {"command":"vscode-ibmi-queues.splfbrowser2.delete"               ,"when":"view == new-splfBrowser && viewItem =~ /^spooledfile2$/","group":"inline@4"},
         {"command":"vscode-ibmi-queues.splfbrowser2.filter"               ,"when":"view == new-splfBrowser && viewItem =~ /^splflist.*$/","group":"4_splfuser@1"},
         {"command":"vscode-ibmi-queues.splfbrowser2.search"               ,"when":"view == new-splfBrowser && viewItem =~ /^splflist.*$/","group":"4_splfuser@2"},
-        {"command":"vscode-ibmi-queues.splfbrowser2.deleteFilter"         ,"when":"view == new-splfBrowser && viewItem =~ /^splflist.*$/","group":"5_splfuser@1"},
+        {"command":"vscode-ibmi-queues.splfbrowser2.removeFilter"         ,"when":"view == new-splfBrowser && viewItem =~ /^splflist.*$/","group":"5_splfuser@1"},
         {"command":"vscode-ibmi-queues.splfbrowser2.deleteAll"            ,"when":"view == new-splfBrowser && viewItem =~ /^splflist$/","group":"5_splfuser@2"},
         {"command":"vscode-ibmi-queues.splfbrowser2.delete"               ,"when":"view == new-splfBrowser && viewItem =~ /^spooledfile2$/ ","group":"3_spooledfile@0"},
         {"command":"vscode-ibmi-queues.splfbrowser2.deleteNamed"          ,"when":"view == new-splfBrowser && viewItem =~ /^spooledfile2$/ ","group":"3_spooledfile@1"},
-        {"command":"vscode-ibmi-queues.splfbrowser2.deleteFiltered"       ,"when":"view == new-splfBrowser && viewItem =~ /^spooledfile2$/ ","group":"3_spooledfile@2"},
+        {"command":"vscode-ibmi-queues.splfbrowser2.removeFiltered"       ,"when":"view == new-splfBrowser && viewItem =~ /^spooledfile2$/ ","group":"3_spooledfile@2"},
         {"command":"vscode-ibmi-queues.splfbrowser2.move"                 ,"when":"view == new-splfBrowser && viewItem =~ /^spooledfile2$/","group":"2_spooledfile@3"},
         {"command":"vscode-ibmi-queues.splfbrowser2.search"               ,"when":"view == new-splfBrowser && viewItem =~ /^spooledfile2.*$/","group":"1_spooledfile@2"},
         {"command":"vscode-ibmi-queues.splfbrowser2.filter"               ,"when":"view == new-splfBrowser && viewItem =~ /^spooledfile2.*$/","group":"1_spooledfile@1"},
@@ -253,8 +253,8 @@
         {"command":"vscode-ibmi-queues.splfbrowser2.createUpdatedSPOOLED_FILE_DATA_TF","when":"never"},
         {"command":"vscode-ibmi-queues.splfbrowser2.delete",                           "when":"never"},
         {"command":"vscode-ibmi-queues.splfbrowser2.deleteAll",                        "when":"never"},
-        {"command":"vscode-ibmi-queues.splfbrowser2.deleteFilter",                     "when":"never"},
-        {"command":"vscode-ibmi-queues.splfbrowser2.deleteFiltered",                   "when":"never"},
+        {"command":"vscode-ibmi-queues.splfbrowser2.removeFilter",                     "when":"true"},
+        {"command":"vscode-ibmi-queues.splfbrowser2.removeFiltered",                   "when":"never"},
         {"command":"vscode-ibmi-queues.splfbrowser2.deleteNamed",                      "when":"never"},
         {"command":"vscode-ibmi-queues.splfbrowser2.downloadDefault",                  "when":"never"},
         {"command":"vscode-ibmi-queues.splfbrowser2.downloadWithLineSpacing",          "when":"never"},

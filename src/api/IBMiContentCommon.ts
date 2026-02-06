@@ -332,10 +332,10 @@ export namespace IBMiContentCommon {
     const TYPES = types?.map(type => `${type}`).join(', ').toLocaleUpperCase() || '*ALL';
     const OBJLIBS =
       (library !== '*LIBL' && library !== '*ALL')
-        ? `'` + libraries.filter(item => !'*LIBL'.includes(item)).join(`', '`).toLocaleUpperCase() + `'`
+        ? `'` + libraries.filter(item => !'*LIBL'.includes(item)).join(`', '`)/*.toLocaleUpperCase()*/ + `'`
         : '';
 
-    const objQuery = `/*GETOBJECTTEXT*/ select OBJLONGSCHEMA SCHEMA_NAME, OBJNAME OBJECT_NAME, OBJTEXT OBJECT_TEXT
+    const objQuery = `/*GETOBJECTTEXT*/ select OBJLONGSCHEMA SCHEMA_NAME, OBJNAME OBJECT_NAME, OBJTEXT OBJECT_TEXT, OBJTYPE OBJECT_TYPE
       from table ( QSYS2.OBJECT_STATISTICS(OBJECT_SCHEMA => '${library}', OBJTYPELIST => '${TYPES}', OBJECT_NAME => '*ALL') ) OB 
       where 1=1
       ${OBJLIBS ? ` and OBJLONGSCHEMA in (${OBJLIBS})` : ''}
@@ -348,7 +348,8 @@ export namespace IBMiContentCommon {
       ({
         library: result.SCHEMA_NAME,
         name: result.OBJECT_NAME,
-        text: result.OBJECT_TEXT
+        text: result.OBJECT_TEXT,
+        type: result.OBJECT_TYPE
       } as ObjAttributes)
       );
     }

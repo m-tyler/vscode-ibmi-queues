@@ -5,6 +5,8 @@ import { IBMiContentCommon, sortObjectArrayByProperty } from "../api/IBMiContent
 import { IBMiContentJobs } from "../api/IBMiContentJobs";
 import { IBMiUserJobsUsers, IBMiUserJobsFilter, IBMiUserJob, ObjAttributes, ObjLockState } from '../typings';
 import { getUsrJobDetailFileUri } from '../filesystem/qsys/UsrJobFs';
+import { Code4i, getFilterConfigForServer } from "../tools";
+
 
 //https://code.visualstudio.com/api/references/icons-in-labels
 const objectIcons: Record<string, string> = {

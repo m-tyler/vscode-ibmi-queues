@@ -3,8 +3,9 @@ import { SortOptions } from '@halcyontech/vscode-ibmi-types/api/IBMiContent';
 import vscode, { l10n, TreeDataProvider } from 'vscode';
 import { IBMiContentSplf } from "../api/IBMiContentSplf";
 import { getSpooledFileUri } from '../filesystem/qsys/SplfFs';
-import { Code4i, getConfigForServer } from '../tools';
-import { IBMISplfList, IBMiSpooledFile, SplfOpenOptions } from '../typings';
+import { Code4i, getFilterConfigForServer } from '../tools';
+import { IBMISplfList, IBMiSpooledFile, SplfOpenOptions, ObjAttributes } from '../typings';
+import { IBMiContentCommon, sortObjectArrayByProperty } from "../api/IBMiContentCommon";
 
 
 //https://code.visualstudio.com/api/references/icons-in-labels
@@ -19,7 +20,7 @@ const objectIcons: Record<string, string> = {
 export default class SPLFBrowser implements TreeDataProvider<any> {
   private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null | void>;
   public onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null | void>;
-  private _userFilters: IBMISplfList[] = [];
+  private _splfFilters: IBMISplfList[] = [];
 
   constructor() {
     this._onDidChangeTreeData = new vscode.EventEmitter();
@@ -27,21 +28,24 @@ export default class SPLFBrowser implements TreeDataProvider<any> {
   }
 
   refresh(target?: any) {
+    const config = Code4i.getConfig();
+    const splfConfig = getFilterConfigForServer('splfBrowser', config.name) || [];
+    this.populateData(splfConfig);
     this._onDidChangeTreeData.fire(target);
   }
   // Method to set data when your extension becomes connected
   public populateData(newData: IBMISplfList[]): void {
-    this._userFilters = newData;
-    this._onDidChangeTreeData.fire(); // Notify VS Code to refresh
+    this._splfFilters = newData;
+    // this._onDidChangeTreeData.fire(); // Notify VS Code to refresh
   }
 
   // Method to clear the tree view
   public clearTree(oldData?: IBMISplfList): void {
     if (oldData) {
-      const tempArray = this._userFilters.filter(obj => obj.name !== oldData.name);
-      this._userFilters = tempArray;
+      const tempArray = this._splfFilters.filter(obj => obj.name !== oldData.name);
+      this._splfFilters = tempArray;
     } else {
-      this._userFilters = []; // Clear the data
+      this._splfFilters = []; // Clear the data
     }
     this._onDidChangeTreeData.fire(); // Notify VS Code to refresh
   }
@@ -62,7 +66,6 @@ export default class SPLFBrowser implements TreeDataProvider<any> {
     const items = [];
     const connection = Code4i.getConnection();
     if (connection) {
-      const config = getConfigForServer(Code4i.getConfig().name)||[];
 
       if (element) {
         // let filter;
@@ -85,13 +88,25 @@ export default class SPLFBrowser implements TreeDataProvider<any> {
           break;
         }
 
-      } else if (config) { // no context exists in tree yet, get from settings if present
-        items.push(...config.map(
-          (theFilter: IBMISplfList) => new SpooledFileFilter(`splflist`, element, theFilter, connection.currentUser)
-        ));
+      } else if (this._splfFilters && this._splfFilters.length > 0) { // no context exists in tree yet, get from settings if present
+        const filtereditems: IBMISplfList[] = this._splfFilters.filter((item: any) => item === item);
+        const distinctNames: string[] = [...new Set(filtereditems.map(item => item.name))];
+        const objAttributes = await IBMiContentCommon.getObjectText(distinctNames, [], ['*USRPRF','*OUTQ']);
+        const splfQs = this._splfFilters.map((splfQs) =>
+        ({
+          name: splfQs.name,
+          type: splfQs.type,
+          library: splfQs.library,
+          text: lookupItemText(splfQs, objAttributes),
+        } as IBMISplfList));
+        const mappedItems: SpooledFileFilter[] = splfQs.map((item) => new SpooledFileFilter(`splflist`, element, item, connection.currentUser));
+        items.push(...mappedItems);
+        // items.push(...this._splfFilters.map(
+        //   (theFilter: IBMISplfList) => new SpooledFileFilter(`splflist`, element, theFilter, connection.currentUser)
+        // ));
       }
     }
-    return items;
+    return Promise.all(items);
   }
   /**
    * getParemt
@@ -167,19 +182,19 @@ export default class SPLFBrowser implements TreeDataProvider<any> {
       );
       console.log(`item.number == ${item.number}`);
       if (showDebugInfo) {
-      item.tooltip = item.tooltip.appendMarkdown(``
-        .concat(`<tr><td>${l10n.t(`path:`)}</td><td>&nbsp;${item.path}</td></tr>`)
-        .concat(`<tr><td>${l10n.t(`Open Parms.readonly:`)}</td><td>&nbsp;${item.openQueryparms.readonly}</td></tr>`)
-        .concat(`<tr><td>${l10n.t(`Open Parms.openMode:`)}</td><td>&nbsp;${item.openQueryparms.openMode}</td></tr>`)
-        .concat(`<tr><td>${l10n.t(`Open Parms.position:`)}</td><td>&nbsp;${item.openQueryparms.position}</td></tr>`)
-        .concat(`<tr><td>${l10n.t(`Open Parms.pageLength:`)}</td><td>&nbsp;${item.openQueryparms.pageLength}</td></tr>`)
-        .concat(`<tr><td>${l10n.t(`Open Parms.fileExtension:`)}</td><td>&nbsp;${item.openQueryparms.fileExtension}</td></tr>`)
-        .concat(`<tr><td>${l10n.t(`Open Parms.saveToPath:`)}</td><td>&nbsp;${item.openQueryparms.saveToPath}</td></tr>`)
-        .concat(`<tr><td>${l10n.t(`Open Parms.tempPath:`)}</td><td>&nbsp;${item.openQueryparms.tempPath}</td></tr>`)
-        .concat(`<tr><td>${l10n.t(`Open Parms.qualifiedJobName:`)}</td><td>&nbsp;${item.openQueryparms.qualifiedJobName}</td></tr>`)
-        .concat(`<tr><td>${l10n.t(`Open Parms.spooledFileNumber:`)}</td><td>&nbsp;${item.openQueryparms.spooledFileNumber}</td></tr>`)
-        .concat(`<tr><td>${l10n.t(`Open Parms.spooledFileName:`)}</td><td>&nbsp;${item.openQueryparms.spooledFileName}</td></tr>`)
-      );
+        item.tooltip = item.tooltip.appendMarkdown(``
+          .concat(`<tr><td>${l10n.t(`path:`)}</td><td>&nbsp;${item.path}</td></tr>`)
+          .concat(`<tr><td>${l10n.t(`Open Parms.readonly:`)}</td><td>&nbsp;${item.openQueryparms.readonly}</td></tr>`)
+          .concat(`<tr><td>${l10n.t(`Open Parms.openMode:`)}</td><td>&nbsp;${item.openQueryparms.openMode}</td></tr>`)
+          .concat(`<tr><td>${l10n.t(`Open Parms.position:`)}</td><td>&nbsp;${item.openQueryparms.position}</td></tr>`)
+          .concat(`<tr><td>${l10n.t(`Open Parms.pageLength:`)}</td><td>&nbsp;${item.openQueryparms.pageLength}</td></tr>`)
+          .concat(`<tr><td>${l10n.t(`Open Parms.fileExtension:`)}</td><td>&nbsp;${item.openQueryparms.fileExtension}</td></tr>`)
+          .concat(`<tr><td>${l10n.t(`Open Parms.saveToPath:`)}</td><td>&nbsp;${item.openQueryparms.saveToPath}</td></tr>`)
+          .concat(`<tr><td>${l10n.t(`Open Parms.tempPath:`)}</td><td>&nbsp;${item.openQueryparms.tempPath}</td></tr>`)
+          .concat(`<tr><td>${l10n.t(`Open Parms.qualifiedJobName:`)}</td><td>&nbsp;${item.openQueryparms.qualifiedJobName}</td></tr>`)
+          .concat(`<tr><td>${l10n.t(`Open Parms.spooledFileNumber:`)}</td><td>&nbsp;${item.openQueryparms.spooledFileNumber}</td></tr>`)
+          .concat(`<tr><td>${l10n.t(`Open Parms.spooledFileName:`)}</td><td>&nbsp;${item.openQueryparms.spooledFileName}</td></tr>`)
+        );
       }
       item.tooltip = item.tooltip.appendMarkdown(``
         .concat(`</table>`)
@@ -332,4 +347,13 @@ function formatToolTip(label: string, obj: Record<string, any>): string {
     .join()
     ;
   return md;
+}
+function lookupItemText(aFilter: IBMISplfList, objAttributes: ObjAttributes[]): string {
+  let index = 0;
+  let theText = '';
+  index = objAttributes.findIndex(f => f.name === aFilter.name && f.type === aFilter.type);
+  if (index >= 0) {
+    theText = objAttributes[index].text;
+  }
+  return theText;
 }
