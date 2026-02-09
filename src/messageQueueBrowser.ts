@@ -4,8 +4,8 @@ import vscode, { l10n, } from 'vscode';
 import { MsgqFS, getUriFromPathMsg, parseFSOptions } from './filesystem/qsys/MsgQFs';
 import { IBMiContentCommon, sortObjectArrayByProperty } from "./api/IBMiContentCommon";
 import { IBMiContentMsgq } from "./api/IBMiContentMsgQ";
-import { Code4i } from './tools';
-import { IBMiMessageQueue, IBMiMessageQueueFilter, IBMiMessageQueueMessage, MsgOpenOptions, SearchParms } from './typings';
+import { Code4i, getFilterConfigForServer, updateFilterConfigForServer, updateFilterConfigForServera } from './tools';
+import { IBMiMessageQueue, IBMiMessageQueueFilter, IBMiMessageQueueMessage, IBMiMessageQueuesConfig, MsgOpenOptions, SearchParms } from './typings';
 import MSGQBrowser, { MessageQueue, MessageQueueList } from './views/messageQueueView';
 
 const msgqBrowserObj = new MSGQBrowser();
@@ -80,7 +80,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
             else {
               newFilter = { messageQueue: newEntryParts[1], messageQueueLibrary: newEntryParts[0], type: '*MSGQ' };
             }
-            if (saveFilterValuesMessages(newFilter)) { vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.sortFilter`, node); }
+            if (await saveFilterValuesMessages(newFilter)) { vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.sortFilter`, node); }
           }
         } catch (e) {
           // console.log(e);
@@ -108,7 +108,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
             else {
               newFilter = { messageQueue: x[1], messageQueueLibrary: x[0], type: '*USRPRF' };
             }
-            if (saveFilterValuesMessages(newFilter)) { vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.sortFilter`, node); }
+            if (await saveFilterValuesMessages(newFilter)) { vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.sortFilter`, node); }
           }
         } catch (e) {
           // console.log(e);
@@ -142,7 +142,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
         const config = Code4i.getConfig();
 
         let removeMsgq: string | undefined;
-        let messageQueues: IBMiMessageQueueFilter[] = config[`messageQueues`] || [];;
+        let messageQueues = getFilterConfigForServer<IBMiMessageQueueFilter>('messageQueues', config.name) || [];
         let msgBoxList: string[] = [``];
 
         if (node) {
@@ -166,9 +166,10 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
                   const index = messageQueues.findIndex(f => f.messageQueueLibrary + '/' + f.messageQueue === removeMsgq);
                   if (index > -1) {
                     const deletedItem = messageQueues.splice(index, 1);
-                    config.messageQueues = messageQueues;
-                    Code4i.getInstance()!.setConfig(config);
-                    msgqBrowserObj.populateData(Code4i.getConfig().messageQueues);
+                    // config.messageQueues = messageQueues;
+                    // Code4i.getInstance()!.setConfig(config);
+                    await updateFilterConfigForServer<IBMiMessageQueueFilter>('messageQueues', config.name, messageQueues);
+                    msgqBrowserObj.populateData(messageQueues);
                     vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refreshBrowser`);
                   }
                 }
@@ -668,7 +669,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
   }
 }
 function run_on_connection() {
-  msgqBrowserObj.populateData(Code4i.getConfig().messageQueues);
+  msgqBrowserObj.refresh();
 }
 async function run_on_disconnection() {
   msgqBrowserObj.clearTree();
@@ -682,9 +683,11 @@ function updateExtensionStatus(): boolean {
   vscode.commands.executeCommand('setContext', 'vscode-ibmi-queues.messageQueues2:msgqBrowserDisabled', !enabled);
   return enabled;
 }
-function saveFilterValuesMessages(singleFilter: IBMiMessageQueueFilter): boolean {
+async function saveFilterValuesMessages(singleFilter: IBMiMessageQueueFilter): Promise<boolean> {
   const config = Code4i.getConfig();
-  let messageQueues: IBMiMessageQueueFilter[] = config[`messageQueues`] || [];
+  // let messageQueues: IBMiMessageQueueFilter[] = config[`messageQueues`] || [];
+  let messageQueues = getFilterConfigForServer<IBMiMessageQueueFilter>('messageQueues', config.name) || [];
+  
   const foundFilter = messageQueues.find(queue => queue.messageQueueLibrary === singleFilter.messageQueueLibrary 
                                                 && queue.messageQueue === singleFilter.messageQueue
                                                 && queue.type === singleFilter.type
@@ -692,8 +695,10 @@ function saveFilterValuesMessages(singleFilter: IBMiMessageQueueFilter): boolean
 
 if (!foundFilter) {
     messageQueues.push(singleFilter);
-    config.messageQueues = messageQueues;
-    Code4i.getInstance()!.setConfig(config);
+    // config.messageQueues = messageQueues;
+    // Code4i.getInstance()!.setConfig(config);
+    await updateFilterConfigForServera<IBMiMessageQueuesConfig>('messageQueues', config.name, messageQueues);
+    
     return true;
   }
   return false;

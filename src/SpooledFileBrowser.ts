@@ -8,8 +8,8 @@ import sanitize from 'sanitize-filename';
 import vscode, { l10n, TextDocumentShowOptions } from 'vscode';
 import { SplfFS } from "../src/filesystem/qsys/SplfFs";
 import { IBMiContentSplf } from "./api/IBMiContentSplf";
-import { Code4i, mergeObjects, numberToWords, toTitleCase, getFilterConfigForServer, updateFilterConfigForServer } from "./tools";
-import { IBMISplfList, IBMiSpooledFile, SplfOpenOptions } from './typings';
+import { Code4i, mergeObjects, numberToWords, toTitleCase, getFilterConfigForServer, updateFilterConfigForServer, getFilterConfigForServera, updateFilterConfigForServera } from "./tools";
+import { IBMISplfList, IBMiSpooledFile, SplfOpenOptions, SpooledFileConfig } from './typings';
 import SPLFBrowser, { SpooledFileFilter, SpooledFiles } from './views/SplfsView';
 import { TempFileManager } from './tools/tempFileManager';
 
@@ -55,7 +55,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
     vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser2.addUserFilter`, async () => {
       const config = getConnection().getConfig();
 
-      const splfConfig = getFilterConfigForServer('splfBrowser', config.name) || [];
+      const splfConfig = getFilterConfigForServera<SpooledFileConfig>('splfBrowser', config.name) || [];
 
       const userInput = await vscode.window.showInputBox({
         title: l10n.t(`Add new spooled file filter for User`),
@@ -73,7 +73,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
 
           if (!splfConfig.includes(newEntry)) {
             splfConfig.push(newEntry);
-            await updateFilterConfigForServer('splfBrowser', config.name, splfConfig);
+            await updateFilterConfigForServera<SpooledFileConfig>('splfBrowser', config.name, splfConfig);
           }
           vscode.commands.executeCommand(`vscode-ibmi-queues.splfbrowser2.sortFilter`);
         }
@@ -85,7 +85,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
       const connection = getConnection();
       const config = connection.getConfig();
 
-      const splfConfig = getFilterConfigForServer('splfBrowser', config.name) || [];
+      const splfConfig = getFilterConfigForServera<SpooledFileConfig>('splfBrowser', config.name) || [];
 
       const userInput = await vscode.window.showInputBox({
         title: l10n.t(`OUTQ to show Spooled Files`),
@@ -103,7 +103,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
 
           if (!splfConfig.includes(newEntry)) {
             splfConfig.push(newEntry);
-            await updateFilterConfigForServer('splfBrowser', config.name, splfConfig);
+            await updateFilterConfigForServera<SpooledFileConfig>('splfBrowser', config.name, splfConfig);
           }
           vscode.commands.executeCommand(`vscode-ibmi-queues.splfbrowser2.sortFilter`);
         }
@@ -115,12 +115,12 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
       const config = getConfig();
 
       let removeItem: string | undefined;
-      let SpooledFileConfig2 = getFilterConfigForServer('splfBrowser', config.name) || [];
+      let splfConfig = getFilterConfigForServera<SpooledFileConfig>('splfBrowser', config.name) || [];
 
       if (node) {
         removeItem = node.path;
       } else {
-        const quickPickItems = SpooledFileConfig2.map(item => item.name);
+        const quickPickItems = splfConfig.map(item => item.name);
         removeItem = await vscode.window.showQuickPick(quickPickItems, {
           placeHolder: l10n.t('Select filter name to remove'),
         });
@@ -135,13 +135,13 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
             .then(async result => {
               // let isPresent = false;
               if (result === l10n.t(`Yes`)) {
-                if (SpooledFileConfig2) {
+                if (splfConfig) {
                 }
-                const index = SpooledFileConfig2.findIndex((f: IBMISplfList) => f.name === removeItem);
+                const index = splfConfig.findIndex((f: IBMISplfList) => f.name === removeItem);
                 if (index > -1) {
-                  SpooledFileConfig2.splice(index, 1);
-                  await updateFilterConfigForServer('splfBrowser', config.name, SpooledFileConfig2);
-                  splfBrowserObj.populateData(SpooledFileConfig2);
+                  splfConfig.splice(index, 1);
+                  await updateFilterConfigForServera<SpooledFileConfig>('splfBrowser', config.name, splfConfig);
+                  splfBrowserObj.populateData(splfConfig);
                   vscode.commands.executeCommand(`vscode-ibmi-queues.splfbrowser2.refreshBrowser`);
                 }
               }
@@ -153,7 +153,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
     }),
     vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser2.sortFilter`, async (node) => {
       const config = Code4i.getConfig();
-      const splfConfig = getFilterConfigForServer('splfBrowser', config.name) || [];
+      const splfConfig = getFilterConfigForServera<SpooledFileConfig>('splfBrowser', config.name) || [];
 
       splfConfig.sort(
         (filter1: IBMISplfList, filter2: IBMISplfList) => {
@@ -171,7 +171,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
       );
       try {
 
-        await updateFilterConfigForServer('splfBrowser', config.name, splfConfig);
+        await updateFilterConfigForServera<SpooledFileConfig>('splfBrowser', config.name, splfConfig);
         splfBrowserObj.populateData(splfConfig);
         vscode.commands.executeCommand(`vscode-ibmi-queues.splfbrowser2.refreshBrowser`, node);
       } catch (e) {

@@ -94,6 +94,11 @@ export interface IBMiMessageQueue extends IBMiMessageQueueFilter {
   text?: string
   protected?: boolean
 }  
+export interface IBMiMessageQueuesConfig {
+    // Dynamic keys like 'dev' or 'PROD' map to arrays of config items
+    [serverConnectionName: string]: IBMiMessageQueue[];
+    // [serverConnectionName: string]: SpooledFileConfigItem[];
+}
 export interface IBMiMessageFile{
   messageFileLibrary?: string
   messageFile?: string
@@ -184,4 +189,8 @@ export interface IBMiUserJob {
 export interface DspJobOpenOptions {
   readonly?: boolean;
   printSection?: string;
+}
+export interface IBMiUserJobsUsersConfig {
+    // Dynamic keys like 'dev' or 'PROD' map to arrays of config items
+    [serverConnectionName: string]: IBMiUserJobsUsers[];
 }

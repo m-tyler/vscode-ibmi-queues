@@ -43,6 +43,9 @@ export default class UserJobBrowser implements TreeDataProvider<any> {
   }
 
   refresh(target?: any): void {
+    const config = Code4i.getConfig();
+    const userJobsConfig = getFilterConfigForServer<IBMiUserJobsUsers>('userJobBrowser', config.name) || [];
+    this.populateData(userJobsConfig);
     this._onDidChangeTreeData.fire(target);
   }
 

@@ -5,6 +5,7 @@ import { IBMiContentCommon, sortObjectArrayByProperty } from "../api/IBMiContent
 import { IBMiContentMsgq } from "../api/IBMiContentMsgQ";
 import { IBMiMessageQueue, IBMiMessageQueueFilter, IBMiMessageQueueMessage, ObjAttributes, ObjLockState } from '../typings';
 import { getMessageDetailFileUri } from '../filesystem/qsys/MsgQFs';
+import { Code4i, getFilterConfigForServer } from '../tools';
 
 //https://code.visualstudio.com/api/references/icons-in-labels
 const objectIcons: Record<string, string> = {
@@ -29,7 +30,6 @@ export default class MSGQBrowser implements TreeDataProvider<any> {
   // Method to set data when your extension becomes connected
   public populateData(newData: IBMiMessageQueueFilter[]): void {
     this._msgqFilters = newData;
-    this._onDidChangeTreeData.fire(); // Notify VS Code to refresh
   }
 
   // Method to clear the tree view
@@ -47,6 +47,9 @@ export default class MSGQBrowser implements TreeDataProvider<any> {
   }
 
   refresh(target?: any): void {
+    const config = Code4i.getConfig();
+    let messageQueues = getFilterConfigForServer<IBMiMessageQueueFilter>('messageQueues', config.name) || [];
+    this.populateData(messageQueues);
     this._onDidChangeTreeData.fire(target);
   }
 
@@ -240,10 +243,10 @@ export class MessageQueue extends vscode.TreeItem implements IBMiMessageQueue {
     // this.iconPath = new vscode.ThemeIcon(this.protected ? `lock-small` : icon
     this.iconPath = new vscode.ThemeIcon(icon
       , (this.protected ? new vscode.ThemeColor(`list.errorForeground`) : undefined));
-    this.sortBy(this.sort);
     this.text = theMsgq.text || '';
-    this.setDescription();
+    this.sortBy(this.sort);
     this.setFilterDescription(this.filter);
+    this.setDescription();
     this.inquiryMode = '';
   }
   sortBy(sort: SortOptions) {
@@ -267,7 +270,7 @@ export class MessageQueue extends vscode.TreeItem implements IBMiMessageQueue {
     else if (type === '*USRPRF') { choosenIcon = objectIcons[`usrprf`]; }
     return choosenIcon;
   }
-  setFilterDescription(value: string | undefined) { this.filterDescription = `${value?`Filtered by: ${value}`:''}`; }
+  setFilterDescription(value: string | undefined) { this.filterDescription = `${value ? `Filtered by: ${value}` : ''}`; }
   setDescription() {
     this.description =
       (this.text ? this.text : '')

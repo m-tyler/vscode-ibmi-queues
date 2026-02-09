@@ -4,7 +4,7 @@ import { FilterType } from '@halcyontech/vscode-ibmi-types/api/Filter';
 import { SortOrder } from '@halcyontech/vscode-ibmi-types/api/IBMiContent';
 import { Tools } from '@halcyontech/vscode-ibmi-types/api/Tools';
 import vscode from "vscode";
-import { FuncInfo, IBMiSpooledFile, SplfOpenOptions, SpooledFileConfig, IBMISplfList } from './typings';
+import { FuncInfo, IBMiSpooledFile, SplfOpenOptions, SpooledFileConfig, IBMISplfList, IBMiUserJobsUsersConfig, IBMiMessageQueuesConfig } from './typings';
 
 import { posix } from "path";
 import { loadBase, getBase } from './base';
@@ -422,7 +422,7 @@ function getSource(func: string, library: string) {
   // break;
   }
 }
-export async function updateFilterConfigForServer(configurationSection: string, serverName: string, newItems: IBMISplfList[]) {
+export async function updateFilterConfigForServerold(configurationSection: string, serverName: string, newItems: IBMISplfList[]) {
   const configurationItem = `vscode-ibmi-queues.${configurationSection}`;
   const config = vscode.workspace.getConfiguration(configurationItem);
 
@@ -444,9 +444,83 @@ export async function updateFilterConfigForServer(configurationSection: string, 
   // 3. Store back to settings (Global target for User settings)
   await config.update('filters', configList, vscode.ConfigurationTarget.Global);
 }
-export function getFilterConfigForServer(configurationSection: string, serverName: string): IBMISplfList[] | undefined {
+
+/**
+ * Updates or creates a filter configuration for a specific server.
+ * @param configurationSection The section (e.g., 'userJobBrowser', 'msgqBrowser')
+ * @param serverName The name of the server to update
+ * @param newConfig The new array of filter objects
+ */
+export async function updateFilterConfigForServer<T>(
+  configurationSection: string, 
+  serverName: string, 
+  newConfig: T[]
+): Promise<void> {
+  const configurationItem = `vscode-ibmi-queues.${configurationSection}`;
+  const config = vscode.workspace.getConfiguration(configurationItem);
+  
+  // 1. Get existing filters (array of objects where key is the server name)
+  const currentFilters = config.get<any[]>('filters') || [];
+  
+  // 2. Find the index of the object for this server
+  const serverIndex = currentFilters.findIndex(item => item.hasOwnProperty(serverName));
+  
+  if (serverIndex !== -1) {
+    // Update existing server entry
+    currentFilters[serverIndex][serverName] = newConfig;
+  } else {
+    // Add new server entry
+    currentFilters.push({ [serverName]: newConfig });
+  }
+
+  // 3. Persist back to Workspace settings
+  await config.update('filters', currentFilters, vscode.ConfigurationTarget.Workspace);
+}
+
+
+export function getFilterConfigForServer<T>(configurationSection: string, serverName: string): T[] | undefined {
+    const configurationItem = `vscode-ibmi-queues.${configurationSection}`;
+    const configList = vscode.workspace.getConfiguration(configurationItem).get<any[]>('filters') || [];
+    const serverObj = configList.find(item => item[serverName]);
+    return serverObj ? (serverObj[serverName] as T[]) : undefined;
+}
+export function getFilterConfigForServerold(configurationSection: string, serverName: string): IBMISplfList[] | undefined {
     const configurationItem = `vscode-ibmi-queues.${configurationSection}`;
     const configList = vscode.workspace.getConfiguration(configurationItem).get<SpooledFileConfig[]>('filters') || [];
     const serverObj = configList.find(item => item[serverName]);
     return serverObj ? serverObj[serverName] : undefined;
 }
+// Extracts 'T' from something like { [key: string]: T[] }
+type ExtractArrayType<T> = T extends { [key: string]: (infer U)[] } ? U : never;
+
+export function getFilterConfigForServera<T>( configurationSection: string, serverName: string ): ExtractArrayType<T>[] | undefined {
+    const configurationItem = `vscode-ibmi-queues.${configurationSection}`;
+    
+    // configList is an array of objects like [{ "dev": [...] }]
+    const configList = vscode.workspace.getConfiguration(configurationItem).get<any[]>('filters') || [];
+    
+    const serverObj = configList.find(item => item[serverName]);
+    
+    // We cast to the extracted type to satisfy the compiler
+    return serverObj ? (serverObj[serverName] as ExtractArrayType<T>[]) : undefined;
+}
+export async function updateFilterConfigForServera<T>( configurationSection: string, serverName: string, newConfig: ExtractArrayType<T>[] ): Promise<void> {
+  const configurationItem = `vscode-ibmi-queues.${configurationSection}`;
+  const config = vscode.workspace.getConfiguration(configurationItem);
+  
+  const currentFilters = config.get<any[]>('filters') || [];
+  const serverIndex = currentFilters.findIndex(item => Object.keys(item).includes(serverName));
+  
+  if (serverIndex !== -1) {
+    currentFilters[serverIndex][serverName] = newConfig;
+  } else {
+    currentFilters.push({ [serverName]: newConfig });
+  }
+
+  await config.update('filters', currentFilters, vscode.ConfigurationTarget.Workspace);
+}
+// Returns IBMiUserJobsUsers[]
+// const jobs = getFilterConfigForServera<IBMiUserJobsUsersConfig>('userJobBrowser', 'PROD');
+
+// Only accepts IBMiMessageQueue[]
+// await updateFilterConfigForServera<IBMiMessageQueuesConfig>('msgqBrowser', 'dev', myMsgArray);

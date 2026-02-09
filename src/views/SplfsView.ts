@@ -3,8 +3,8 @@ import { SortOptions } from '@halcyontech/vscode-ibmi-types/api/IBMiContent';
 import vscode, { l10n, TreeDataProvider } from 'vscode';
 import { IBMiContentSplf } from "../api/IBMiContentSplf";
 import { getSpooledFileUri } from '../filesystem/qsys/SplfFs';
-import { Code4i, getFilterConfigForServer } from '../tools';
-import { IBMISplfList, IBMiSpooledFile, SplfOpenOptions, ObjAttributes } from '../typings';
+import { Code4i, getFilterConfigForServer, getFilterConfigForServera } from '../tools';
+import { IBMISplfList, IBMiSpooledFile, SplfOpenOptions, ObjAttributes, SpooledFileConfig } from '../typings';
 import { IBMiContentCommon, sortObjectArrayByProperty } from "../api/IBMiContentCommon";
 
 
@@ -27,16 +27,16 @@ export default class SPLFBrowser implements TreeDataProvider<any> {
     this.onDidChangeTreeData = this._onDidChangeTreeData.event;
   }
 
-  refresh(target?: any) {
-    const config = Code4i.getConfig();
-    const splfConfig = getFilterConfigForServer('splfBrowser', config.name) || [];
-    this.populateData(splfConfig);
-    this._onDidChangeTreeData.fire(target);
-  }
   // Method to set data when your extension becomes connected
   public populateData(newData: IBMISplfList[]): void {
     this._splfFilters = newData;
     // this._onDidChangeTreeData.fire(); // Notify VS Code to refresh
+  }
+  refresh(target?: any) {
+    const config = Code4i.getConfig();
+    const splfConfig = getFilterConfigForServera<SpooledFileConfig>('splfBrowser', config.name) || [];
+    this.populateData(splfConfig);
+    this._onDidChangeTreeData.fire(target);
   }
 
   // Method to clear the tree view
@@ -91,14 +91,11 @@ export default class SPLFBrowser implements TreeDataProvider<any> {
       } else if (this._splfFilters && this._splfFilters.length > 0) { // no context exists in tree yet, get from settings if present
         const filtereditems: IBMISplfList[] = this._splfFilters.filter((item: any) => item === item);
         const distinctNames: string[] = [...new Set(filtereditems.map(item => item.name))];
-        const objAttributes = await IBMiContentCommon.getObjectText(distinctNames, [], ['*USRPRF','*OUTQ']);
-        const splfQs = this._splfFilters.map((splfQs) =>
-        ({
-          name: splfQs.name,
-          type: splfQs.type,
-          library: splfQs.library,
-          text: lookupItemText(splfQs, objAttributes),
-        } as IBMISplfList));
+        const objAttributes = await IBMiContentCommon.getObjectText(distinctNames, [], ['*USRPRF', '*OUTQ']);
+        const splfQs: IBMISplfList[] = this._splfFilters.map((splfQ): IBMISplfList => ({
+          ...splfQ,
+          text: lookupItemText(splfQ, objAttributes),
+        }));
         const mappedItems: SpooledFileFilter[] = splfQs.map((item) => new SpooledFileFilter(`splflist`, element, item, connection.currentUser));
         items.push(...mappedItems);
         // items.push(...this._splfFilters.map(
@@ -154,9 +151,10 @@ export default class SPLFBrowser implements TreeDataProvider<any> {
 
       item.tooltip = new vscode.MarkdownString(`<table>`
         .concat(`<thead>${element.library}/${element.name}</thead><hr>`)
-        .concat(item.itemText ? `<tr><td>${l10n.t('Text:')}</td><td>&nbsp;${item.itemText}</td></tr>` : ``)
-        .concat(splfNum.numberOf ? `<tr><td>${l10n.t('Spooled Files:')}</td><td>&nbsp;${splfNum.numberOf}</td></tr>` : ``)
-        .concat(element.filter ? `<tr><td>${l10n.t(`Filter:`)}</td><td>&nbsp;${element.filter}</td></tr>` : ``)
+        .concat(`<tr><td>${l10n.t(`Text:`)} </td><td>&nbsp;${l10n.t(String(item.itemText))}</td></tr>`)
+        .concat(`<tr><td>${l10n.t(`Spooled Files:`)} </td><td>&nbsp;${l10n.t(String(splfNum.numberOf))}</td></tr>`)
+        .concat(`<tr><td>${l10n.t(`Sorting:`)} </td><td>&nbsp;${l10n.t(String(item.sortDescription))}</td></tr>`)
+        .concat(`<tr><td>${l10n.t(`Filtering:`)} </td><td>&nbsp;${l10n.t(String(element.filter))}</td></tr>`)
         .concat(`</table>`)
       );
       item.tooltip.supportHtml = true;
@@ -178,7 +176,7 @@ export default class SPLFBrowser implements TreeDataProvider<any> {
         .concat(`<tr><td>${l10n.t(`Form Type:`)}</td><td>&nbsp;${l10n.t(item.formType)}</td></tr>`)
         .concat(`<tr><td>${l10n.t(`Output Queue:`)}</td><td>&nbsp;${l10n.t(item.queueLibrary), item.queue}</td></tr>`)
         .concat(`<tr><td>${l10n.t(`Device Type:`)}</td><td>&nbsp;${l10n.t(item.deviceType)}</td></tr>`)
-        .concat(`<tr><td>${l10n.t(`Filter:`)}</td><td>&nbsp;${l10n.t(item.parent.filter)}</td></tr>`)
+        .concat(`<tr><td>${l10n.t(`Filtering:`)}</td><td>&nbsp;${l10n.t(String(item.parent.filter))}</td></tr>`)
       );
       console.log(`item.number == ${item.number}`);
       if (showDebugInfo) {
@@ -212,11 +210,12 @@ export class SpooledFileFilter extends vscode.TreeItem {
   name: string;
   library: string;
   type: string;
-  _description: string;
-  description: string;
-  filter: string; // reduces tree items to matching tokens
+  text: string;
+  filter?: string; // reduces tree items to matching tokens
   itemText: string;
   numberOf: number | undefined;
+  filterDescription?: string;
+  sortDescription: string | undefined;
   readonly sort: SortOptions = { order: "date", ascending: true };
   constructor(contextType: string, parent: vscode.TreeItem, theFilter: IBMISplfList, currentUser: string) {
     super(theFilter.name, vscode.TreeItemCollapsibleState.Collapsed);
@@ -230,14 +229,15 @@ export class SpooledFileFilter extends vscode.TreeItem {
     this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
     this.parent = parent;
     this.iconPath = new vscode.ThemeIcon(icon, (this.protected ? new vscode.ThemeColor(`list.errorForeground`) : undefined));
-
-    this._description = `${theFilter.name} ${this.protected ? `(readonly)` : ``}`;
-    this.description = this._description;
+    this.text = theFilter.text || '';
+    this.setFilterDescription(this.filter);
     this.sortBy(this.sort);
-
+    this.setDescription();
+    
     this.filter = '';
     this.itemText = '';
   }
+  setFilterDescription(value: string | undefined) { this.filterDescription = `${value?`Filtered by: ${value}`:''}`; }
   /** @type {import("../api/IBMiContent").SortOptions}*/
   sortBy(sort: SortOptions) {
     if (this.sort.order !== sort.order) {
@@ -247,14 +247,17 @@ export class SpooledFileFilter extends vscode.TreeItem {
     else {
       this.sort.ascending = !this.sort.ascending;
     }
-    this.description = `${this._description ? `${this._description} ` : ``}(sort: ${this.sort.order} ${this.sort.ascending ? `🔺` : `🔻`})`;
+    this.sortDescription = `( sort: ${this.sort.order} ${this.sort.ascending ? `🔺` : `🔻`})`;
   }
-  setFilter(filter: string) {
-    this.filter = filter;
-  }
+  setFilter(filter: string | undefined) { this.filter = filter; }
   clearToolTip() { this.tooltip = undefined; }
-  // setDescription(value: string | boolean) { this.description = (value?value:``)+this.sortDescription; }
   setRecordCount(amount: number) { this.numberOf = amount; }
+  setDescription() {
+    this.description =
+      (this.text ? this.text : '')
+      + (this.filterDescription ? ` ` + this.filterDescription : ``)
+      + (this.sortDescription ? ` ` + this.sortDescription : '');
+  }
 }
 
 export class SpooledFiles extends vscode.TreeItem implements IBMiSpooledFile {
@@ -349,14 +352,33 @@ function formatToolTip(label: string, obj: Record<string, any>): string {
   return md;
 }
 function lookupItemText(aFilter: IBMISplfList, objAttributes: ObjAttributes[]): string {
-  let index = 0;
-  let theText = '';
-  index = objAttributes.findIndex(oa => oa.name === aFilter.name && oa.type === aFilter.type);
-  if (index === -1) {
-    index = objAttributes.findIndex(oa => oa.name === aFilter.name && aFilter.text);
+  // let index = 0;
+  // let theText = '';
+  // index = objAttributes.findIndex(oa => oa.name === aFilter.name && oa.type === aFilter.type);
+  // if (index === -1) {
+  //   index = objAttributes.findIndex(oa => oa.name === aFilter.name && aFilter.text);
+  // }
+  // if (index >= 0) {
+  //   theText = objAttributes[index].text;
+  // }
+  // return theText;
+
+  // 1. Primary Match: Name and Type
+  let match = objAttributes.find(
+    (attr) => attr.name === aFilter.name && attr.type === aFilter.type
+  );
+
+  // If match exists but text is null, reset match to look for fallback
+  if (match && match.text === null) {
+    match = undefined;
   }
-  if (index >= 0) {
-    theText = objAttributes[index].text;
+
+  // 2. Fallback: Name only (where text is not null)
+  if (!match) {
+    match = objAttributes.find(
+      (attr) => attr.name === aFilter.name && attr.text !== null
+    );
   }
-  return theText;
+
+  return match?.text ?? '';
 }
