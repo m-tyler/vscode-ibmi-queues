@@ -48,7 +48,7 @@ export default class MSGQBrowser implements TreeDataProvider<any> {
 
   refresh(target?: any): void {
     const config = Code4i.getConfig();
-    let messageQueues = getFilterConfigForServer<IBMiMessageQueueFilter>('messageQueues', config.name) || [];
+    let messageQueues = getFilterConfigForServer<IBMiMessageQueueFilter>('msgqBrowser', config.name) || [];
     this.populateData(messageQueues);
     this._onDidChangeTreeData.fire(target);
   }
@@ -367,7 +367,7 @@ export class MessageQueueList extends vscode.TreeItem implements IBMiMessageQueu
     this.path = this.resourceUri.path.substring(1); // removes leading slash for QSYS paths
 
     this.command = {
-      command: `vscode-ibmi-queues.messageQueues2.viewMessageDetails`,
+      command: `vscode-ibmi-queues.messageBrowser.viewMessageDetails`,
       title: `Show Message Details`,
       arguments: [this]
     };

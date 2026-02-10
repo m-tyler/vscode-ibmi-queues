@@ -348,7 +348,7 @@ export namespace IBMiContentSplf {
     }
     const objQuery = `select UT.OBJTEXT OBJECT_TEXT, OBJNAME, OBJLIB
     from table ( QSYS2.OBJECT_STATISTICS(OBJECT_SCHEMA => '${library}'
-                                      , OBJTYPELIST => '${type === `*OUTQ` ? `*OUTQ` : `*USRPRF,*MSGQ`}'
+                                      , OBJTYPELIST => '${type === `*OUTQ` ? `*OUTQ` : `*USRPRF,*OUTQ`}'
                                       , OBJECT_NAME => '*ALL') ) UT where OBJNAME in (${OBJS})
     `.replace(/\n\s*/g, ' ');
     let results = await Code4i.runSQL(objQuery);

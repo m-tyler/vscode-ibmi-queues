@@ -4,7 +4,7 @@ import vscode, { l10n, } from 'vscode';
 import { MsgqFS, getUriFromPathMsg, parseFSOptions } from './filesystem/qsys/MsgQFs';
 import { IBMiContentCommon, sortObjectArrayByProperty } from "./api/IBMiContentCommon";
 import { IBMiContentMsgq } from "./api/IBMiContentMsgQ";
-import { Code4i, getFilterConfigForServer, updateFilterConfigForServer, updateFilterConfigForServera } from './tools';
+import { Code4i, getFilterConfigForServer, updateFilterConfigForServer } from './tools';
 import { IBMiMessageQueue, IBMiMessageQueueFilter, IBMiMessageQueueMessage, IBMiMessageQueuesConfig, MsgOpenOptions, SearchParms } from './typings';
 import MSGQBrowser, { MessageQueue, MessageQueueList } from './views/messageQueueView';
 
@@ -19,7 +19,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
   const enabled = updateExtensionStatus();
   // Listen for changes to the setting
   vscode.workspace.onDidChangeConfiguration(e => {
-    if (e.affectsConfiguration('vscode-ibmi-queues.messageQueues2.msgqBrowser.enabled')) {
+    if (e.affectsConfiguration('vscode-ibmi-queues.messageBrowser.msgqBrowser.enabled')) {
       updateExtensionStatus();
     }
   });
@@ -29,36 +29,36 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
       vscode.workspace.registerFileSystemProvider(`message`, new MsgqFS(context), {
         isCaseSensitive: false
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.sortByID`, (node: MessageQueue | MessageQueueList) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.sortByID`, (node: MessageQueue | MessageQueueList) => {
         // NOTE: repeated calls will cause asc to desc change in order
         node.sortBy({ order: "name" });
         node.setDescription();
         if (node.contextValue === `message`) {
-          vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, (node.parent));
+          vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, (node.parent));
         }
         else {
-          vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, (node));
+          vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, (node));
         }
         msgqBrowserViewer.reveal(node, { expand: true });
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.sortByDate`, (node) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.sortByDate`, (node) => {
         // NOTE: repeated calls will cause asc to desc change in order
         node.sortBy({ order: "date" });
         node.setDescription();
         if (node.contextValue === `message`) {
-          vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, (node.parent));
+          vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, (node.parent));
         }
         else {
-          vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, (node));
+          vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, (node));
         }
         msgqBrowserViewer.reveal(node, { expand: true });
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.refreshBrowser`, () => msgqBrowserObj.refresh()),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.refresh`, (node) => msgqBrowserObj.refresh(node)),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.revealBrowser`, async (item: vscode.TreeItem, options?: FocusOptions) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.refreshBrowser`, () => msgqBrowserObj.refresh()),
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.refresh`, (node) => msgqBrowserObj.refresh(node)),
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.revealBrowser`, async (item: vscode.TreeItem, options?: FocusOptions) => {
         msgqBrowserViewer.reveal(item, options);
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.addFilter`, async (node) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.addFilter`, async (node) => {
 
         let newEntry;
         let newFilter: IBMiMessageQueue;
@@ -80,13 +80,13 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
             else {
               newFilter = { messageQueue: newEntryParts[1], messageQueueLibrary: newEntryParts[0], type: '*MSGQ' };
             }
-            if (await saveFilterValuesMessages(newFilter)) { vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.sortFilter`, node); }
+            if (await saveFilterValuesMessages(newFilter)) { vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.sortFilter`, node); }
           }
         } catch (e) {
           // console.log(e);
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.addUserFilter`, async (node) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.addUserFilter`, async (node) => {
 
         let newEntry;
         let newFilter: IBMiMessageQueue;
@@ -108,13 +108,13 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
             else {
               newFilter = { messageQueue: x[1], messageQueueLibrary: x[0], type: '*USRPRF' };
             }
-            if (await saveFilterValuesMessages(newFilter)) { vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.sortFilter`, node); }
+            if (await saveFilterValuesMessages(newFilter)) { vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.sortFilter`, node); }
           }
         } catch (e) {
           // console.log(e);
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.sortFilter`, async (node) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.sortFilter`, async (node) => {
         const config = Code4i.getConfig();
         let messageQueues: IBMiMessageQueueFilter[] = config[`messageQueues`] || [];
         try {
@@ -133,16 +133,16 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
           config.messageQueues = messageQueues;
           Code4i.getInstance()!.setConfig(config);
           msgqBrowserObj.populateData(messageQueues);
-          vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refreshBrowser`);
+          vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refreshBrowser`);
         } catch (e) {
           // console.log(e);
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.removeFilter`, async (node) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.removeFilter`, async (node) => {
         const config = Code4i.getConfig();
 
         let removeMsgq: string | undefined;
-        let messageQueues = getFilterConfigForServer<IBMiMessageQueueFilter>('messageQueues', config.name) || [];
+        let messageQueues = getFilterConfigForServer<IBMiMessageQueuesConfig>('msgqBrowser', config.name) || [];
         let msgBoxList: string[] = [``];
 
         if (node) {
@@ -166,11 +166,9 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
                   const index = messageQueues.findIndex(f => f.messageQueueLibrary + '/' + f.messageQueue === removeMsgq);
                   if (index > -1) {
                     const deletedItem = messageQueues.splice(index, 1);
-                    // config.messageQueues = messageQueues;
-                    // Code4i.getInstance()!.setConfig(config);
-                    await updateFilterConfigForServer<IBMiMessageQueueFilter>('messageQueues', config.name, messageQueues);
+                    await updateFilterConfigForServer<IBMiMessageQueuesConfig>('msgqBrowser', config.name, messageQueues);
                     msgqBrowserObj.populateData(messageQueues);
-                    vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refreshBrowser`);
+                    vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refreshBrowser`);
                   }
                 }
               });
@@ -179,7 +177,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
           // console.log(e);
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.deleteAll`, async (node: MessageQueue) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.deleteAll`, async (node: MessageQueue) => {
         if (node) {
           if (node.protected) {
             vscode.window.showErrorMessage(l10n.t(`You dont have authority to remove messages from {0}.`, node.messageQueue));
@@ -207,7 +205,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
                 }
               }
 
-              vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, node);
+              vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, node);
             } catch (e: unknown) {
               if (e instanceof Error) {
                 vscode.window.showErrorMessage(l10n.t(`Error deleting ALL message queue messages! {0}.`, e));
@@ -222,7 +220,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
           vscode.window.showInformationMessage(l10n.t(`Remove All Messages, not performed! Use command from Message Queue Broswer.`));
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.deleteAllButUnanswered`, async (node: MessageQueue) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.deleteAllButUnanswered`, async (node: MessageQueue) => {
         if (node) {
           if (node.protected) {
             vscode.window.showErrorMessage(l10n.t(`You dont have authority to remove messages from {0}.`, node.messageQueue));
@@ -250,7 +248,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
                 }
               }
 
-              vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, node);
+              vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, node);
             } catch (e: unknown) {
               if (e instanceof Error) {
                 vscode.window.showErrorMessage(l10n.t(`Error deleting ALL message queue messages! {0}.`, e));
@@ -266,7 +264,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
           vscode.window.showInformationMessage(l10n.t(`Remove All Messages Except Unanswered, not performed! Use command from Message Queue Broswer.`));
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.delete`, async (node: MessageQueueList) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.delete`, async (node: MessageQueueList) => {
         if (node) {
           if (node.protected) {
             vscode.window.showErrorMessage(l10n.t(`You dont have authority to remove messages from {0}.`, node.messageQueue));
@@ -292,7 +290,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
               }
               else {
                 vscode.window.showInformationMessage(l10n.t(`Deleted {0}.`, node.messageID + '-' + node.messageText));
-                vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, node.parent);
+                vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, node.parent);
               }
             } catch (e: unknown) {
               if (e instanceof Error) {
@@ -308,7 +306,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
           //Running from command.
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.deleteByID`, async (node: MessageQueueList) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.deleteByID`, async (node: MessageQueueList) => {
         if (node) {
           if (node.protected) {
             vscode.window.showErrorMessage(l10n.t(`You dont have authority to remove messages from {0}.`, node.messageQueue));
@@ -336,7 +334,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
             } as IBMiMessageQueue;
 
             if (result === `Yes`) {
-              objects = await IBMiContentMsgq.getMessageQueueMessageList(`vscode-ibmi-queues.messageQueues2.deleteByID`
+              objects = await IBMiContentMsgq.getMessageQueueMessageList(`vscode-ibmi-queues.messageBrowser.deleteByID`
                 , treeFilter, undefined, node.messageID);
               objects = sortObjectArrayByProperty(objects, `messageTimestamp`, `asc`);
             }
@@ -377,7 +375,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
               }
             }
             if (deleteCount > 0) {
-              vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, node.parent);
+              vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, node.parent);
               vscode.window.showInformationMessage(l10n.t(`Deleted {0} messages.`, deleteCount));
             }
             await connection.runCommand({ command: `DLTF FILE(${tempLib}/${TempFileName}) `, environment: `ile` });
@@ -391,7 +389,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
           //Running from command.
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.deletesFiltered`, async (node: MessageQueueList) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.deletesFiltered`, async (node: MessageQueueList) => {
         if (node) {
           if (node.protected) {
             vscode.window.showErrorMessage(l10n.t(`You dont have authority to delete messages from {0}.`, node.messageQueue));
@@ -422,7 +420,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
             } as IBMiMessageQueue;
 
             if (result === `Yes`) {
-              objects = await IBMiContentMsgq.getMessageQueueMessageList(`vscode-ibmi-queues.messageQueues2.deletesFiltered`,
+              objects = await IBMiContentMsgq.getMessageQueueMessageList(`vscode-ibmi-queues.messageBrowser.deletesFiltered`,
                 treeFilter, node.parent.filter);
               objects = sortObjectArrayByProperty(objects, `messageTimestamp`, `asc`);
             }
@@ -464,7 +462,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
             if (deleteCount > 0) {
               node.parent.setFilter(undefined);
               node.parent.setDescription(); // turn off item description
-              vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, node.parent);
+              vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, node.parent);
               vscode.window.showInformationMessage(l10n.t(`Deleted {0} messages.`, deleteCount));
             }
             await connection.runCommand({ command: `DLTF FILE(${tempLib}/${TempFileName}) `, environment: `ile` });
@@ -478,20 +476,20 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
           //Running from command.
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.filterInquiry`, async (node: MessageQueue) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.filterInquiry`, async (node: MessageQueue) => {
         if (node.inquiryMode === 'INQUIRY') {
           node.setInquiryMode(``);
           node.clearToolTip();
           node.setFilterDescription(node.filter);
           node.setDescription();
-          vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.revealBrowser`, node, { expand: false, focus: true, select: true });
-          vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, node);
+          vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.revealBrowser`, node, { expand: false, focus: true, select: true });
+          vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, node);
 
         } else {
-          vscode.commands.executeCommand('vscode-ibmi-queues.messageQueues2.filter', node, 'INQUIRY');
+          vscode.commands.executeCommand('vscode-ibmi-queues.messageBrowser.filter', node, 'INQUIRY');
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.filter`, async (node, inquiryMode?: string) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.filter`, async (node, inquiryMode?: string) => {
 
         let searchMsgq: any;
         let searchMsgqLibrary: any;
@@ -539,7 +537,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
 
               if (!msgqMsgNum || msgqMsgNum === 0) {
                 const treeFilter = { ...node };
-                const msgqMsgNumAnswer = await IBMiContentMsgq.getMessageQueueCount(`vscode-ibmi-queues.messageQueues2.filter`, treeFilter, searchTerm, undefined, inquiryMode);
+                const msgqMsgNumAnswer = await IBMiContentMsgq.getMessageQueueCount(`vscode-ibmi-queues.messageBrowser.filter`, treeFilter, searchTerm, undefined, inquiryMode);
                 if (Number.isFinite(Number(msgqMsgNumAnswer))) { msgqMsgNum = Number(msgqMsgNumAnswer); }
               }
               if (msgqMsgNum > 0) {
@@ -549,7 +547,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
                   node.parent.clearToolTip();
                   node.parent.setFilterDescription(searchTerm ? searchTerm : inquiryMode);
                   node.parent.setDescription();
-                  vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, node.parent);
+                  vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, node.parent);
                 } else {
                   node.setFilter(searchTerm);
                   node.setInquiryMode(inquiryMode);
@@ -557,8 +555,8 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
                   node.setFilterDescription(searchTerm ? searchTerm : inquiryMode);
                   node.setDescription();
                   // await msgqBrowserObj.getChildren(node);
-                  vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, node);
-                  vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.revealBrowser`, node, { expand: true, focus: true, select: true });
+                  vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, node);
+                  vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.revealBrowser`, node, { expand: true, focus: true, select: true });
                 }
               } else {
                 vscode.window.showErrorMessage(l10n.t(`No messages to filter.`));
@@ -574,17 +572,17 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
           if (node.filter) {
             node.setFilter(undefined);
             node.clearToolTip;
-            vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, node);
+            vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, node);
           }
           if (node.parent.filter) {
             node.parent.setFilter(undefined);
             node.parent.clearToolTip;
-            vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, node.parent);
+            vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, node.parent);
           }
         }
 
       }),
-      vscode.commands.registerCommand("vscode-ibmi-queues.messageQueues2.viewMessageDetails", async (item: MessageQueueList, overrideMode?: MsgOpenOptions) => {
+      vscode.commands.registerCommand("vscode-ibmi-queues.messageBrowser.viewMessageDetails", async (item: MessageQueueList, overrideMode?: MsgOpenOptions) => {
         let options: MsgOpenOptions = {};
         options.readonly = item.parent.protected;
         const uri = getUriFromPathMsg(item.path, options);
@@ -608,11 +606,11 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
         }
 
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.searchBrowser`, async () => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.searchBrowser`, async () => {
         vscode.commands.executeCommand('MSGQBrowser.focus');
         vscode.commands.executeCommand('list.find');
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.ReplyToUnanswered`, async (node) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.ReplyToUnanswered`, async (node) => {
         const item = node as IBMiMessageQueueMessage;
         try {
           if (!item.messageReply && item.messageType === 'INQUIRY') {
@@ -626,7 +624,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
               if (!await IBMiContentMsgq.answerMessage(item, userReply)) {
 
               }
-              vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, node.parent);
+              vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, node.parent);
             }
           } else {
             vscode.window.showInformationMessage(l10n.t(`Message not in a state to reply with an answer.`));
@@ -636,7 +634,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
           vscode.window.showErrorMessage(l10n.t(`Error answering message! {0}.`, e));
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.sendMessage`, async (node, inquiry: boolean = false) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.sendMessage`, async (node, inquiry: boolean = false) => {
         const item = node as IBMiMessageQueue;
         try {
           const userReply = await vscode.window.showInputBox({
@@ -650,7 +648,7 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
 
             }
             if (node.collapsibleState === vscode.TreeItemCollapsibleState.Expanded) {
-              vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refresh`, node.parent);
+              vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.refresh`, node.parent);
             }
           }
         } catch (e: any) {
@@ -658,8 +656,8 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
           vscode.window.showErrorMessage(l10n.t(`Error answering message! {0}.`, e));
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.sendInquiryMessage`, async (node) => {
-        vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.sendMessage`, node, true);
+      vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.sendInquiryMessage`, async (node) => {
+        vscode.commands.executeCommand(`vscode-ibmi-queues.messageBrowser.sendMessage`, node, true);
       }),
 
     );
@@ -673,20 +671,19 @@ function run_on_connection() {
 }
 async function run_on_disconnection() {
   msgqBrowserObj.clearTree();
-  vscode.commands.executeCommand(`vscode-ibmi-queues.messageQueues2.refreshBrowser`);
+  vscode.commands.executeCommand(`vscode-ibmi-queues.msgqBrowser.refreshBrowser`);
 }
 function updateExtensionStatus(): boolean {
   const config = vscode.workspace.getConfiguration();
-  const enabled = config.get<boolean>('vscode-ibmi-queues.messageQueues2.msgqBrowser.enabled', true);
+  const enabled = config.get<boolean>('vscode-ibmi-queues.msgqBrowser.enabled', true);
 
   // Example: Show/hide views using setContext
-  vscode.commands.executeCommand('setContext', 'vscode-ibmi-queues.messageQueues2:msgqBrowserDisabled', !enabled);
+  vscode.commands.executeCommand('setContext', 'vscode-ibmi-queues.msgqBrowser:msgqBrowserDisabled', !enabled);
   return enabled;
 }
 async function saveFilterValuesMessages(singleFilter: IBMiMessageQueueFilter): Promise<boolean> {
   const config = Code4i.getConfig();
-  // let messageQueues: IBMiMessageQueueFilter[] = config[`messageQueues`] || [];
-  let messageQueues = getFilterConfigForServer<IBMiMessageQueueFilter>('messageQueues', config.name) || [];
+  let messageQueues = getFilterConfigForServer<IBMiMessageQueuesConfig>('msgqBrowser', config.name) || [];
   
   const foundFilter = messageQueues.find(queue => queue.messageQueueLibrary === singleFilter.messageQueueLibrary 
                                                 && queue.messageQueue === singleFilter.messageQueue
@@ -697,7 +694,7 @@ if (!foundFilter) {
     messageQueues.push(singleFilter);
     // config.messageQueues = messageQueues;
     // Code4i.getInstance()!.setConfig(config);
-    await updateFilterConfigForServera<IBMiMessageQueuesConfig>('messageQueues', config.name, messageQueues);
+    await updateFilterConfigForServer<IBMiMessageQueuesConfig>('msgqBrowser', config.name, messageQueues);
     
     return true;
   }

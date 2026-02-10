@@ -3,7 +3,7 @@ import { FocusOptions } from '@halcyontech/vscode-ibmi-types/';
 import vscode, { l10n, } from 'vscode';
 import { UsrJobFS, getUriFromPathMsg, parseFSOptions } from "./filesystem/qsys/UsrJobFs";
 import { IBMiContentJobs } from "./api/IBMiContentJobs";
-import { Code4i, mergeObjects, numberToWords, toTitleCase, getFilterConfigForServer, updateFilterConfigForServer, updateFilterConfigForServera } from "./tools";
+import { Code4i, mergeObjects, numberToWords, toTitleCase, getFilterConfigForServer, updateFilterConfigForServer } from "./tools";
 import { IBMiUserJobsFilter, DspJobOpenOptions, IBMiUserJob, IBMiUserJobsUsers, IBMiUserJobsUsersConfig } from './typings';
 import UsrJobBrowser, { UserJob, UserList } from './views/userJobsView';
 
@@ -77,7 +77,7 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
       }),
       vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.sort`, async (node) => {
         const config = Code4i.getConfig();
-        const userJobsConfig = getFilterConfigForServer<IBMiUserJobsUsers>('userJobBrowser', config.name) || [];
+        const userJobsConfig = getFilterConfigForServer<IBMiUserJobsUsersConfig>('userJobBrowser', config.name) || [];
         try {
           userJobsConfig.sort((filter1, filter2) => {
             // const primarySort = filter1.user.toLowerCase().localeCompare(filter2.user.toLowerCase());
@@ -91,7 +91,7 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
             // // Assuming 'priority' is a number, for descending order
             return filter1.user.toLowerCase().localeCompare(filter2.user.toLowerCase());
           });
-          await updateFilterConfigForServer<IBMiUserJobsUsers>('userJobBrowser',config.name,userJobsConfig);
+          await updateFilterConfigForServer<IBMiUserJobsUsersConfig>('userJobBrowser',config.name,userJobsConfig);
           userjobBrowserObj.populateData(userJobsConfig);
           vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshBrowser`);
         } catch (e) {
@@ -102,7 +102,7 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
         const config = Code4i.getConfig();
 
         let removeUserEntry: string | undefined;
-        const userJobsConfig = getFilterConfigForServer<IBMiUserJobsUsers>('userJobBrowser', config.name) || [];
+        const userJobsConfig = getFilterConfigForServer<IBMiUserJobsUsersConfig>('userJobBrowser', config.name) || [];
         let msgBoxList: string[] = [``];
 
         if (node) {
@@ -126,7 +126,7 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
                   const index = userJobsConfig.findIndex(f => f.user === removeUserEntry);
                   if (index > -1) {
                     const deletedItem = userJobsConfig.splice(index, 1);// remove and save removed item for "other" processing
-                    await updateFilterConfigForServer<IBMiUserJobsUsers>('userJobBrowser', config.name, userJobsConfig);
+                    await updateFilterConfigForServer<IBMiUserJobsUsersConfig>('userJobBrowser', config.name, userJobsConfig);
                     userjobBrowserObj.populateData(userJobsConfig);
                     vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refreshBrowser`);
                   }
@@ -397,13 +397,12 @@ function updateExtensionStatus(): boolean {
 }
 async function saveFilterValuesUserJobs(singleFilter: IBMiUserJobsFilter): Promise<boolean> {
   const config = Code4i.getConfig();
-  const userJobsConfig = getFilterConfigForServer<IBMiUserJobsUsers>('userJobBrowser', config.name) || [];
-
+   const userJobsConfig = getFilterConfigForServer<IBMiUserJobsUsersConfig>('userJobBrowser', config.name) || [];
   const foundFilter = userJobsConfig.find(userJob => userJob.user === singleFilter.user);
 
   if (!foundFilter) {
     userJobsConfig.push(singleFilter);
-    await updateFilterConfigForServera<IBMiUserJobsUsersConfig>('userJobBrowser', config.name, userJobsConfig);
+    await updateFilterConfigForServer<IBMiUserJobsUsersConfig>('userJobBrowser', config.name, userJobsConfig);
     return true;
   }
   return false;

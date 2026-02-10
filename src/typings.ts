@@ -1,5 +1,7 @@
 import { Range } from "vscode";
 
+export type ExtractArrayType<T> = T extends { [key: string]: (infer U)[] } ? U : never;
+
 export interface IBMiSpooledFile {
   name: string
   number: string
@@ -34,9 +36,7 @@ export interface IBMiSplfCounts {
   numberOf: string
   totalPages: string
 }  
-
 export type SplfDefaultOpenMode = "withSpaces" | "withoutSpaces";
-
 export interface SplfOpenOptions {
   readonly?: boolean;
   openMode?: SplfDefaultOpenMode;
@@ -50,7 +50,6 @@ export interface SplfOpenOptions {
   spooledFileName: string
   namePattern?: string
 }
-
 export interface FuncInfo {
   funcSysLib: string
   funcSysName: string

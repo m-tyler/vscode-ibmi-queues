@@ -17,7 +17,7 @@ export async function initializeMessageQueueSearchView(context: vscode.Extension
   userMsgqSearchViewProvider = new MsgqSearchView(context);
   let search = <SearchParms>{};
   context.subscriptions.push(
-    vscode.commands.registerCommand(`vscode-ibmi-queues.messageQueues2.search`, async (node) => {
+    vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.search`, async (node) => {
       //Initiate search from message item
       if (node && (/^message/.test(node.contextValue))) {
         search.messageQueue = node.messageQueue;
@@ -59,7 +59,7 @@ export async function initializeMessageQueueSearchView(context: vscode.Extension
               message: l10n.t(`'{0}' in {1}, messages.`, String(search.term), String(search.messageQueue))
             });
             const treeFilter = {...node};
-            const msgqMsgNum = await IBMiContentMsgq.getMessageQueueCount(`vscode-ibmi-queues.messageQueues2.search`,treeFilter,node.filter, undefined, node.inquiryMode);
+            const msgqMsgNum = await IBMiContentMsgq.getMessageQueueCount(`vscode-ibmi-queues.messageBrowser.search`,treeFilter,node.filter, undefined, node.inquiryMode);
             if (Number(msgqMsgNum) > 0) {
               // NOTE: if more messages are added, lower the timeout interval
               const timeoutInternal = 9000;

@@ -3,14 +3,16 @@ import { SortOptions } from '@halcyontech/vscode-ibmi-types/api/IBMiContent';
 import vscode, { l10n, TreeDataProvider } from 'vscode';
 import { IBMiContentSplf } from "../api/IBMiContentSplf";
 import { getSpooledFileUri } from '../filesystem/qsys/SplfFs';
-import { Code4i, getFilterConfigForServer, getFilterConfigForServera } from '../tools';
+import { Code4i, getFilterConfigForServer } from '../tools';
 import { IBMISplfList, IBMiSpooledFile, SplfOpenOptions, ObjAttributes, SpooledFileConfig } from '../typings';
 import { IBMiContentCommon, sortObjectArrayByProperty } from "../api/IBMiContentCommon";
 
 
 //https://code.visualstudio.com/api/references/icons-in-labels
 const objectIcons: Record<string, string> = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   '*outq': 'server',
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   '*usrprf': 'server',
   'splf': 'file',
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -34,7 +36,7 @@ export default class SPLFBrowser implements TreeDataProvider<any> {
   }
   refresh(target?: any) {
     const config = Code4i.getConfig();
-    const splfConfig = getFilterConfigForServera<SpooledFileConfig>('splfBrowser', config.name) || [];
+    const splfConfig = getFilterConfigForServer<SpooledFileConfig>('splfBrowser', config.name) || [];
     this.populateData(splfConfig);
     this._onDidChangeTreeData.fire(target);
   }
@@ -144,10 +146,11 @@ export default class SPLFBrowser implements TreeDataProvider<any> {
     if (item instanceof SpooledFileFilter) {
       const splfNum = await IBMiContentSplf.getFilterSpooledFileCount({ name: item.name, library: item.library, type: item.type } as IBMISplfList
         , item.filter);
-      const splfFilterInfo = await IBMiContentSplf.getFilterDescription([item.name], item.library, item.type);
+      const objAttributes = await IBMiContentCommon.getObjectText([item.name], [item.library], [item.type]) || '';
+      // const splfFilterInfo = await IBMiContentSplf.getFilterDescription([item.name], item.library, item.type);
       item.setRecordCount(Number(splfNum.numberOf));
-      item.itemText = splfFilterInfo[0].text || ``;
-      if (splfFilterInfo[0].library && (item.library === '' || item.library === '*LIBL')) { item.library = splfFilterInfo[0].library; }
+      item.itemText = objAttributes[0].text || ``;
+      if (objAttributes[0].library && (item.library === '' || item.library === '*LIBL')) { item.library = objAttributes[0].library; }
 
       item.tooltip = new vscode.MarkdownString(`<table>`
         .concat(`<thead>${element.library}/${element.name}</thead><hr>`)
@@ -222,7 +225,7 @@ export class SpooledFileFilter extends vscode.TreeItem {
     this.name = theFilter.name;
     this.library = theFilter.library || `*LIBL`;
     this.type = theFilter.type;
-    const icon = objectIcons[`${this.type.toLocaleLowerCase()}`] || objectIcons[``];
+    const icon = this.setIcon(`${this.type.toLocaleLowerCase()}`);
     this.protected = this.name.toLocaleUpperCase() !== currentUser.toLocaleUpperCase() ? true : false;
     this.contextValue = `${contextType}${this.protected ? `_readonly` : ``}`;
     this.path = theFilter.name;
@@ -233,6 +236,7 @@ export class SpooledFileFilter extends vscode.TreeItem {
     this.setFilterDescription(this.filter);
     this.sortBy(this.sort);
     this.setDescription();
+    
     
     this.filter = '';
     this.itemText = '';
@@ -249,6 +253,7 @@ export class SpooledFileFilter extends vscode.TreeItem {
     }
     this.sortDescription = `( sort: ${this.sort.order} ${this.sort.ascending ? `🔺` : `🔻`})`;
   }
+  setIcon(type: string): string { return objectIcons[type] || objectIcons[``]; }
   setFilter(filter: string | undefined) { this.filter = filter; }
   clearToolTip() { this.tooltip = undefined; }
   setRecordCount(amount: number) { this.numberOf = amount; }
