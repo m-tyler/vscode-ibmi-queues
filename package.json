@@ -2,7 +2,7 @@
   "name":"vscode-ibmi-queues",
   "displayName":"vscode-ibmi-queues",
   "description":"IBM i Queue Objects Viewer",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "preview":true,
   "license":"MIT",
   "engines":{"vscode":"^1.90.0"},
