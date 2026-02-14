@@ -10,7 +10,7 @@ import MSGQBrowser, { MessageQueue, MessageQueueList } from './views/messageQueu
 
 const msgqBrowserObj = new MSGQBrowser();
 const msgqBrowserViewer = vscode.window.createTreeView(
-  `msgqBrowser`, {
+  `Queues-MessageBrowser`, {
   treeDataProvider: msgqBrowserObj,
   showCollapseAll: true,
   canSelectMany: true,
@@ -327,8 +327,8 @@ export function initializeMessageQueueBrowser(context: vscode.ExtensionContext) 
             const tempLib = Code4i.getTempLibrary();
             let objects: IBMiMessageQueueMessage[] = [];
             const treeFilter = {
-              messageQueueLibrary: node.messageQueueLibrary,
-              messageQueue: node.messageQueue,
+              messageQueueLibrary: node.parent.messageQueueLibrary,
+              messageQueue: node.parent.messageQueue,
               type: node.parent.type,
               protected: node.parent.protected
             } as IBMiMessageQueue;

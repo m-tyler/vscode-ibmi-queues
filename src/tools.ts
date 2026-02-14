@@ -175,7 +175,7 @@ export function buildPathFileNamefromPattern(filterType: string, splf: IBMiSpool
 }
 export function getMyConfig(configName: string) {
   const myConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfBrowser');
-  let mySpooledConfig: string = myConfig.get<string>(`${configName}`) || '';
+  let mySpooledConfig: any = myConfig.get<string>(`${configName}`) || '';
 
   return mySpooledConfig;
 }

@@ -9,7 +9,7 @@ import UsrJobBrowser, { UserJob, UserList } from './views/userJobsView';
 
 const userjobBrowserObj = new UsrJobBrowser();
 const userjobBrowserViewer = vscode.window.createTreeView(
-  `userJobBrowser`, {
+  `Queues-UserJobBrowser`, {
   treeDataProvider: userjobBrowserObj,
   showCollapseAll: true,
   canSelectMany: true,
@@ -28,7 +28,6 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
       vscode.workspace.registerFileSystemProvider(`usrjob`, new UsrJobFS(context), {
         isCaseSensitive: false
       }),
-      // vscode.commands.registerCommand('vscode-ibmi-queues.userJobBrowser.');
       vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.sortByID`, (node: UserList | UserJob) => {
         // NOTE: repeated calls will cause asc to desc change in order
         node.sortBy({ order: "name" });

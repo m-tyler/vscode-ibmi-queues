@@ -14,16 +14,16 @@ export class SplfSearchView implements TreeDataProvider<any> {
 
   constructor(context: vscode.ExtensionContext) {
     context.subscriptions.push(
-      vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser2.refreshSearchView`, async () => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser.refreshSearchView`, async () => {
         this.refresh();
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser2.closeSearchView`, async () => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser.closeSearchView`, async () => {
         vscode.commands.executeCommand(`setContext`, `vscode-ibmi-queues.splfbrowser2:searchViewVisible`, false);
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser2.collapseSearchView`, async () => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser.collapseSearchView`, async () => {
         this.collapse();
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser2.expandSearchView`, async () => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser.expandSearchView`, async () => {
         this.expand();
       }),
     );
@@ -40,7 +40,7 @@ export class SplfSearchView implements TreeDataProvider<any> {
     this.refresh();
     this.setViewVisible(true);
 
-    vscode.commands.executeCommand(`new-splfBrowser.focus`);
+    vscode.commands.executeCommand(`Queues-SpoolfedBrowser.focus`);
   }
 
   refresh() {
@@ -52,10 +52,10 @@ export class SplfSearchView implements TreeDataProvider<any> {
   }
 
   collapse() {
-    vscode.commands.executeCommand(`workbench.actions.treeView.new-splfBrowser.collapseAll`);
+    vscode.commands.executeCommand(`workbench.actions.treeView.Queues-SpoolfedBrowser.collapseAll`);
   }
   expand() {
-    vscode.commands.executeCommand(`workbench.actions.treeView.new-splfBrowser.expandAll`);
+    vscode.commands.executeCommand(`workbench.actions.treeView.Queues-SpoolfedBrowser.expandAll`);
   }
 
   async getChildren(hitSource: HitSource): Promise<vscode.TreeItem[]> {
@@ -160,7 +160,7 @@ class LineHit extends vscode.TreeItem {
     this.description = String(line.number);
 
     this.command = {
-      // command: `vscode-ibmi-queues.splfbrowser2. openWithoutLineSpacing`,
+      // command: `vscode-ibmi-queues.splfbrowser. openWithoutLineSpacing`,
       command: `vscode.openWith`,
       title: `Open Spooled File`,
       tooltip: `Open Spooled File`,
