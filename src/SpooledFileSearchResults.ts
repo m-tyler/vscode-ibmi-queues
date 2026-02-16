@@ -166,7 +166,7 @@ export async function initializeSpooledFileSearchView(context: vscode.ExtensionC
           }
         });
     }),
-    vscode.window.registerTreeDataProvider(`Queue-SpooledFileSearchView`, splfSearchViewProvider),
+    vscode.window.registerTreeDataProvider(`Queues-SpooledFileSearchView`, splfSearchViewProvider),
   );
   Code4i.getInstance()?.subscribe(context, `connected`, "Get temporary library", runOnConnection);
 }

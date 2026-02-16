@@ -121,7 +121,7 @@ export async function initializeMessageQueueSearchView(context: vscode.Extension
       }
 
     }),
-    vscode.window.registerTreeDataProvider(`MsgqSearchView`, userMsgqSearchViewProvider),
+    vscode.window.registerTreeDataProvider(`Queues-MsgqSearchView`, userMsgqSearchViewProvider),
   );
   Code4i.getInstance()?.subscribe(context, `connected`, "Get temporary library", runOnConnection);
 }
