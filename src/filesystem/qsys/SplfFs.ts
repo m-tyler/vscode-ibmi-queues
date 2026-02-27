@@ -22,7 +22,7 @@ export function getUriFromPathSplf(path: string, options?: SplfOpenOptions) {
 
 export function getUriFromPath(path: string, options?: SplfOpenOptions) {
   const query = toQueryParms(options as SplfOpenOptions);
-  return vscode.Uri.parse(path).with({ scheme: `spooledfile2`, path: `/${path}`, query });
+  return vscode.Uri.parse(path).with({ scheme: `spooledfile`, path: `/${path}`, query });
 }
 
 export function getFilePermission(uri: vscode.Uri): FilePermission | undefined {

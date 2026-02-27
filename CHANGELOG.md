@@ -1,9 +1,16 @@
 # Change Log
 
-All notable changes to the "vscode-ibmi-queues" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
+## 0.0.12
+- Fixed search view issues from reports and message queue views
+## 0.0.11
+- Fixed search view ID misspellings
+## 0.0.10
+- Fix for missing sub menu items.
+- Removed values of 2 or -2 in text.
+## 0.0.9
+- fix bug preventing delete by message ID
+## 0.0.8
+- changed the display name for the market places
+## 0.0.7
 - Initial release
+- Merged in separate project, Code for IBM i Spooled Files, into this on project.

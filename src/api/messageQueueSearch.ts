@@ -53,13 +53,13 @@ export namespace MessageQueueSearch {
         // let largeString = JSON.stringify(workFileFormat);
         const query =
           `create or replace table ${tempLib}.${tempName} as (select MESSAGE_ID, MESSAGE_KEY, MESSAGE_TEXT
-          from table ( QSYS2.MESSAGE_QUEUE_INFO(
-           QUEUE_NAME => '${treeFilter.messageQueue}'
-           QUEUE_LIBRARY => '${treeFilter.messageQueueLibrary}')
-           where 1=1
+            from table ( QSYS2.MESSAGE_QUEUE_INFO(
+            QUEUE_NAME => '${treeFilter.messageQueue}'
+            , QUEUE_LIBRARY => '${treeFilter.messageQueueLibrary}')
+            where 1=1
           ${messageID ? ` and MESSAGE_ID = '${messageID}'` : ''}
           ${searchWords ? ` and (MESSAGE_TEXT like '%${searchWords}%' or MESSAGE_SECOND_LEVEL_TEXT like '%${searchWords}%')` : ''}
-          )  with no data`.replace(/\n\s*/g, '');
+          )  with no data`.replace(/\n\s*/g, ' ');
         const rs = await Code4i!.runSQL(query);
       }
       else { return []; }

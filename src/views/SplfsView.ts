@@ -323,7 +323,7 @@ export class SpooledFiles extends vscode.TreeItem implements IBMiSpooledFile {
     this.description = l10n.t(`- {0} - Pages: {1}, Time: {2} `, this.status, this.totalPages, this.creationTimestamp.substring(11));
     this.iconPath = new vscode.ThemeIcon(icon);
     this.protected = parent.protected;
-    this.contextValue = `spooledfile2${this.protected ? `_readonly` : ``}`;
+    this.contextValue = `spooledfile${this.protected ? `_readonly` : ``}`;
     this.deviceType = ``;
 
     this.iconPath = new vscode.ThemeIcon(icon, (this.protected ? new vscode.ThemeColor(`list.errorForeground`) : undefined));

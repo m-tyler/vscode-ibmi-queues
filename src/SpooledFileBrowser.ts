@@ -25,12 +25,12 @@ const splfBrowserViewer = vscode.window.createTreeView(
 export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, tempFileManager: TempFileManager) {
   context.subscriptions.push(
     splfBrowserViewer,
-    vscode.workspace.registerFileSystemProvider(`spooledfile2`, new SplfFS(context), {
+    vscode.workspace.registerFileSystemProvider(`spooledfile`, new SplfFS(context), {
       isCaseSensitive: false
     }),
     vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser.sortFilesByName`, (node: SpooledFileFilter | SpooledFiles) => {
       node.sortBy({ order: "name" });
-      if (node.contextValue === `spooledfile2`) {
+      if (node.contextValue === `spooledfile`) {
         splfBrowserObj.refresh(node.parent);
       }
       else {
@@ -40,7 +40,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
     }),
     vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser.sortFilesByDate`, (node) => {
       node.sortBy({ order: "date" });
-      if (node.contextValue === `spooledfile2`) {
+      if (node.contextValue === `spooledfile`) {
         splfBrowserObj.refresh(node.parent);
       }
       else {
@@ -457,7 +457,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
       searchTerm = await vscode.window.showInputBox({
         // prompt: `Filter ${searchUser}'s spooled files. Delete value to clear filter.`,
         prompt: l10n.t(`Filter {0}'s spooled files. Delete value to clear filter.`, searchName),
-        value: `${node.contextValue === `spooledfile2` ? node.parent.filter : node.filter}`
+        value: `${node.contextValue === `spooledfile` ? node.parent.filter : node.filter}`
       });
 
       if (searchTerm) {
@@ -473,7 +473,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
             searchTerm = searchTerm.toLocaleUpperCase();
             const splfnum = await IBMiContentSplf.getFilterSpooledFileCount({ name: searchName, library: node.library, type: node.type } as IBMISplfList);
             if (Number(splfnum.numberOf) > 0) {
-              if (node.contextValue === `spooledfile2`) {
+              if (node.contextValue === `spooledfile`) {
                 node.parent.setFilter(searchTerm);
                 node.parent.clearToolTip();
                 vscode.commands.executeCommand(`vscode-ibmi-queues.splfbrowser.refreshBrowser`, node.parent);

@@ -23,7 +23,7 @@ export async function initializeSpooledFileSearchView(context: vscode.ExtensionC
     vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser.search`, async (node) => {
       let search = <SearchParms>{};
       //Initiate search from Spooled file item
-      if (node && (/^spooledfile2/.test(node.contextValue))) {
+      if (node && (/^spooledfile/.test(node.contextValue))) {
         search.item = node.parent.name; // USER or OUTQ name
         search.library = node.parent.library; // USER or OUTQ library
         search.type = node.parent.type; // USER or OUTQ 

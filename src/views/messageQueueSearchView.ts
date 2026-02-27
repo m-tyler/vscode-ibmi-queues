@@ -19,7 +19,7 @@ export class MsgqSearchView implements TreeDataProvider<any> {
         this.refresh();
       }),
       vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.closeSearchView`, async () => {
-        vscode.commands.executeCommand(`setContext`, `vscode-ibmi-queues.messageBrowser:searchViewVisible`, false);
+        vscode.commands.executeCommand(`setContext`, `vscode-ibmi-queues.Queues-Message-Search:searchViewVisible`, false);
       }),
       vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.collapseSearchView`, async () => {
         this.collapse();
@@ -31,7 +31,7 @@ export class MsgqSearchView implements TreeDataProvider<any> {
   }
 
   setViewVisible(visible: boolean) {
-    vscode.commands.executeCommand(`setContext`, `vscode-ibmi-queues.messageBrowser:searchViewVisible`, visible);
+    vscode.commands.executeCommand(`setContext`, `vscode-ibmi-queues.Queues-MsgqSearchView:searchViewVisible`, visible);
   }
 
   setResults(actionCommand :string, term: string, results: MessageQueueSearch.Result[]) {
@@ -41,7 +41,7 @@ export class MsgqSearchView implements TreeDataProvider<any> {
     this.refresh();
     this.setViewVisible(true);
 
-    vscode.commands.executeCommand(`MsgqSearchView.focus`);
+    vscode.commands.executeCommand(`Queues-MsgqSearchView.focus`);
   }
 
   refresh() {
@@ -53,10 +53,10 @@ export class MsgqSearchView implements TreeDataProvider<any> {
   }
 
   collapse() {
-    vscode.commands.executeCommand(`workbench.actions.treeView.MsgqSearchView.collapseAll`);
+    vscode.commands.executeCommand(`workbench.actions.treeView.Queues-MsgqSearchView.collapseAll`);
   }
   expand() {
-    vscode.commands.executeCommand(`workbench.actions.treeView.MsgqSearchView.expandAll`);
+    vscode.commands.executeCommand(`workbench.actions.treeView.Queues-MsgqSearchView.expandAll`);
   }
 
   async getChildren(hitSource: HitSource): Promise<vscode.TreeItem[]> {

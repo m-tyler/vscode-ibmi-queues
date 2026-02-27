@@ -18,7 +18,7 @@ export class SplfSearchView implements TreeDataProvider<any> {
         this.refresh();
       }),
       vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser.closeSearchView`, async () => {
-        vscode.commands.executeCommand(`setContext`, `vscode-ibmi-queues.splfbrowser2:searchViewVisible`, false);
+        vscode.commands.executeCommand(`setContext`, `vscode-ibmi-queues.Queues-SpooledFileSearchView:searchViewVisible`, false);
       }),
       vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser.collapseSearchView`, async () => {
         this.collapse();
@@ -30,7 +30,7 @@ export class SplfSearchView implements TreeDataProvider<any> {
   }
 
   setViewVisible(visible: boolean) {
-    vscode.commands.executeCommand(`setContext`, `vscode-ibmi-queues.splfbrowser2:searchViewVisible`, visible);
+    vscode.commands.executeCommand(`setContext`, `vscode-ibmi-queues.Queues-SpooledFileSearchView:searchViewVisible`, visible);
   }
 
   setResults(actionCommand: string, term: string, results: SplfSearch.Result[]) {
@@ -40,7 +40,7 @@ export class SplfSearchView implements TreeDataProvider<any> {
     this.refresh();
     this.setViewVisible(true);
 
-    vscode.commands.executeCommand(`Queues-SpoolfedBrowser.focus`);
+    vscode.commands.executeCommand(`Queues-SpooledFileSearchView.focus`);
   }
 
   refresh() {
@@ -52,10 +52,10 @@ export class SplfSearchView implements TreeDataProvider<any> {
   }
 
   collapse() {
-    vscode.commands.executeCommand(`workbench.actions.treeView.Queues-SpoolfedBrowser.collapseAll`);
+    vscode.commands.executeCommand(`workbench.actions.treeView.Queues-SpooledFileSearchView.collapseAll`);
   }
   expand() {
-    vscode.commands.executeCommand(`workbench.actions.treeView.Queues-SpoolfedBrowser.expandAll`);
+    vscode.commands.executeCommand(`workbench.actions.treeView.Queues-SpooledFileSearchView.expandAll`);
   }
 
   async getChildren(hitSource: HitSource): Promise<vscode.TreeItem[]> {

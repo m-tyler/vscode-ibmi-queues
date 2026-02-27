@@ -32,7 +32,8 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
         // NOTE: repeated calls will cause asc to desc change in order
         node.sortBy({ order: "name" });
         node.setDescription();
-        if (node.contextValue === `userJobJob`) {
+        if (node.contextValue && (/^userJobJob/.test(node.contextValue))) {
+        // if (node.contextValue      === `userJobJob`) {
           vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refresh`, (node.parent));
         }
         else {
@@ -44,7 +45,8 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
         // NOTE: repeated calls will cause asc to desc change in order
         node.sortBy({ order: "date" });
         node.setDescription();
-        if (node.contextValue === `userJobJob`) {
+        if (node.contextValue && (/^userJobJob/.test(node.contextValue))) {
+          // if (node.contextValue   === `userJobJob`) {
           vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.refresh`, (node.parent));
         }
         else {
@@ -198,7 +200,8 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
                 if (Number.isFinite(Number(userJobNumAnswer))) { userJobNum = Number(userJobNumAnswer); }
               }
               if (userJobNum > 0) {
-                if (node.contextValue === `userJobJob`) {
+                if ((/^userJobJob/.test(node.contextValue))) {
+                // if (node.contextValue   === `userJobJob`) {
                   node.parent.setFilter(searchTerm);
                   node.parent.setMsgwMode(filterToMsgwMode);
                   node.parent.clearToolTip();
