@@ -19,7 +19,7 @@ export class MsgqSearchView implements TreeDataProvider<any> {
         this.refresh();
       }),
       vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.closeSearchView`, async () => {
-        vscode.commands.executeCommand(`setContext`, `vscode-ibmi-queues.Queues-Message-Search:searchViewVisible`, false);
+        vscode.commands.executeCommand(`setContext`, `vscode-ibmi-queues.Queues-MsgqSearchView:searchViewVisible`, false);
       }),
       vscode.commands.registerCommand(`vscode-ibmi-queues.messageBrowser.collapseSearchView`, async () => {
         this.collapse();

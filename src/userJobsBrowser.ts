@@ -70,13 +70,13 @@ export function initializeUserJobBrowser(context: vscode.ExtensionContext) {
         newEntry = newEntry!.toLocaleUpperCase();
         try {
           if (newEntry) {
-            if (await saveFilterValuesUserJobs({ user: newEntry })) { vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.sort`, node); }
+            if (await saveFilterValuesUserJobs({ user: newEntry })) { vscode.commands.executeCommand(`vscode-ibmi-queues.userJobBrowser.sortFilter`, node); }
           }
         } catch (e) {
           // console.log(e);
         }
       }),
-      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.sort`, async (node) => {
+      vscode.commands.registerCommand(`vscode-ibmi-queues.userJobBrowser.sortFilter`, async (node) => {
         const config = Code4i.getConfig();
         const userJobsConfig = getFilterConfigForServer<IBMiUserJobsUsersConfig>('userJobBrowser', config.name) || [];
         try {
