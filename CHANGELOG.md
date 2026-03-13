@@ -2,6 +2,7 @@
 
 ## 0.0.12
 - Fixed search view issues from reports and message queue views
+- Added feature from issue #4 (Add more spool file identification to list)
 ## 0.0.11
 - Fixed search view ID misspellings
 ## 0.0.10

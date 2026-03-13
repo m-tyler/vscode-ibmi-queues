@@ -321,6 +321,7 @@ export class SpooledFiles extends vscode.TreeItem implements IBMiSpooledFile {
     this.queue = inp.queue;
 
     this.description = l10n.t(`- {0} - Pages: {1}, Time: {2} `, this.status, this.totalPages, this.creationTimestamp.substring(11));
+    this.description = l10n.t(buildDescriptionTextfromPattern(this));
     this.iconPath = new vscode.ThemeIcon(icon);
     this.protected = parent.protected;
     this.contextValue = `spooledfile${this.protected ? `_readonly` : ``}`;
@@ -386,4 +387,53 @@ function lookupItemText(aFilter: IBMISplfList, objAttributes: ObjAttributes[]): 
   }
 
   return match?.text ?? '';
+}
+function buildDescriptionTextfromPattern(splf: IBMiSpooledFile): string {
+  // this.description = l10n.t(`- {0} - Pages: {1}, Time: {2} `, this.status, this.totalPages, this.creationTimestamp.substring(11));
+  let newName = ``;
+  let counter = 0;
+  // get from config
+  const splfBrowserConfig = vscode.workspace.getConfiguration('vscode-ibmi-queues.splfBrowser');
+  let configPattern: string = splfBrowserConfig.get<string>('treeItemDescriptionPattern') || `status, totalPages, creationTime`;
+  let configLabels: boolean = splfBrowserConfig.get<boolean>('treeItemDescriptionLabels') || false;
+  const patterns = configPattern.split(/,\s*/);
+  patterns.forEach(element => {
+    counter++;
+    switch (element) {
+    case `status`:
+      if (newName.length === 0) {
+        newName += `${splf.status}`;
+      } else {
+        newName += `${configLabels?'Status: ':''}${splf.status}`;
+      }
+      break;
+    case `creationDate`:
+      newName += `, ${configLabels?' Date: ':''}${splf.creationTimestamp!.substring(0,10)}`;
+      break;
+    case `creationTime`:
+      newName += `, ${configLabels?' Time: ':''}${splf.creationTimestamp!.substring(11)}`;
+      break;
+    case `userData`:
+      newName += `, ${configLabels?' User Data: ':''}${splf.userData}`;
+      break;
+    case `size`:
+      newName += `, ${configLabels?' Size: ':''}${splf.size}`;
+      break;
+    case `totalPages`:
+      newName += `, ${configLabels?' Pages: ':''}${splf.totalPages}`;
+      break;
+    case `pageLength`:
+      newName += `, ${configLabels?' Page Length: ':''}${splf.pageLength}`;
+      break;
+    case `qualifiedJobName`:
+      newName += `, ${configLabels?' Job: ':''}${splf.qualifiedJobName.replace(/[/]/, '-')}`;
+      break;
+    case `formType`:
+      newName += `, ${configLabels?' Form: ':''}${splf.formType}`;
+      break;
+    default:
+    }
+  });
+
+  return newName;
 }

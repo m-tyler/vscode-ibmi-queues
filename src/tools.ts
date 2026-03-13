@@ -101,7 +101,7 @@ export function nthIndex(aString: string, pattern: string, n: number) {
   }
   return index;
 }
-export function buildPathFileNamefromPattern(filterType: string, splf: IBMiSpooledFile): string {
+export function buildSplfPathFileNamefromPattern(filterType: string, splf: IBMiSpooledFile): string {
   let newName = ``;
   if (filterType === '*OUTQ') {
     newName = `${splf.queueLibrary}/${splf.queue}/`;

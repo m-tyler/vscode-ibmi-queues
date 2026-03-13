@@ -30,7 +30,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
     }),
     vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser.sortFilesByName`, (node: SpooledFileFilter | SpooledFiles) => {
       node.sortBy({ order: "name" });
-      if (node.contextValue === `spooledfile`) {
+      if (node.contextValue && /spooledfile(_readonly)?/.test(node.contextValue)) {
         splfBrowserObj.refresh(node.parent);
       }
       else {
@@ -40,7 +40,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
     }),
     vscode.commands.registerCommand(`vscode-ibmi-queues.splfbrowser.sortFilesByDate`, (node) => {
       node.sortBy({ order: "date" });
-      if (node.contextValue === `spooledfile`) {
+      if (/spooledfile(_readonly)?/.test(node.contextValue)) {
         splfBrowserObj.refresh(node.parent);
       }
       else {
@@ -457,8 +457,9 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
       searchTerm = await vscode.window.showInputBox({
         // prompt: `Filter ${searchUser}'s spooled files. Delete value to clear filter.`,
         prompt: l10n.t(`Filter {0}'s spooled files. Delete value to clear filter.`, searchName),
-        value: `${node.contextValue === `spooledfile` ? node.parent.filter : node.filter}`
+        value: /spooledfile(_readonly)?/.test(node.contextValue) ? node.parent.filter : node.filter
       });
+      if (searchTerm === undefined) { return;} // canceled popup
 
       if (searchTerm) {
         try {
@@ -471,9 +472,12 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
               message: l10n.t(`Filtering spooled files for {0}, using these words, {1} spooled files.`, searchName, searchTerm),
             });
             searchTerm = searchTerm.toLocaleUpperCase();
-            const splfnum = await IBMiContentSplf.getFilterSpooledFileCount({ name: searchName, library: node.library, type: node.type } as IBMISplfList);
+            let splfQ: IBMISplfList = {name: '', library: '', type: '' };
+            if (/splflist(_readonly)?/.test(node.contextValue)) { splfQ = {name: node.name, library: node.library, type: node.type};} 
+            if (/spooledfile(_readonly)?/.test(node.contextValue)) { splfQ = {name: node.parent.name, library: node.parent.library, type: node.parent.type};} 
+            const splfnum = await IBMiContentSplf.getFilterSpooledFileCount(splfQ);
             if (Number(splfnum.numberOf) > 0) {
-              if (node.contextValue === `spooledfile`) {
+              if (/spooledfile(_readonly)?/.test(node.contextValue)) {
                 node.parent.setFilter(searchTerm);
                 node.parent.clearToolTip();
                 vscode.commands.executeCommand(`vscode-ibmi-queues.splfbrowser.refreshBrowser`, node.parent);
@@ -493,7 +497,12 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
         }
       }
       else {
-        node.setFilter('');
+        if (/spooledfile(_readonly)?/.test(node.contextValue)) {
+          node.parent.setFilter('');
+        } else {
+          node.setFilter('');
+        }
+        node.clearToolTip();
         vscode.commands.executeCommand(`vscode-ibmi-queues.splfbrowser.refreshBrowser`);
       }
 
@@ -642,7 +651,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
       if (!nodes || nodes.length === 0) { return; }
       const openWithLinsSpacing = <boolean>getMyConfig('openWithLineSpacing');
       options = {
-        openMode: options?.openMode || openWithLinsSpacing?'withSpaces':'withoutSpaces',
+        openMode: options?.openMode || openWithLinsSpacing ? 'withSpaces' : 'withoutSpaces',
         fileExtension: options?.fileExtension || `SPLF`,
         saveToPath: options?.saveToPath || os.tmpdir(),
         tempPath: true,

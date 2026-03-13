@@ -319,7 +319,7 @@ export namespace IBMiContentSplf {
       from QSYS2.OUTPUT_QUEUE_INFO OQ
       ${treeFilter.library === `*LIBL` ? `inner join QSYS2.LIBRARY_LIST_INFO LL on OQ.OUTPUT_QUEUE_LIBRARY_NAME = LL.SYSTEM_SCHEMA_NAME` : ``}
       where OUTPUT_QUEUE_NAME = '${treeFilter.name}' 
-      ${treeFilter.library !== `*LIBL` ? `and OUTPUT_QUEUE_NAME = '${treeFilter.library}'` : ``}
+      ${treeFilter.library !== `*LIBL` ? `and OUTPUT_QUEUE_LIBRARY_NAME = '${treeFilter.library}'` : ``}
       limit 1`.replace(/\n\s*/g, ' ');
     }
     let results = await Code4i.runSQL(query);
