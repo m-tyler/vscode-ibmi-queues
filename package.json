@@ -2,7 +2,7 @@
   "name":"vscode-ibmi-queues",
   "displayName": "IBM i Queue Objects Viewer",
   "description":"IBM i Queue Objects Viewer",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "preview":true,
   "license":"MIT",
   "engines":{"vscode":"^1.90.0"},
@@ -27,7 +27,7 @@
           },
           "vscode-ibmi-queues.splfBrowser.treeItemDescriptionPattern":{
             "type":"string",
-            "markdownDescription":"Values to use for the description text of the Spooled File items.\n\nValid values to choose from; \n- `status` \n- `creationDate` \n- `creationTime` \n- `userData` \n- `size` \n- `totalPages` \n- `qualifiedJobName` \n- `formType` \n\nSeparate selections with commas (,). You must reload the Spooled File list for these changes to take affect.",
+            "markdownDescription":"Values to use for the description text of the Spooled File items.\n\nValid values to choose from; \n- `status` \n- `creationDate` \n- `creationTime` \n- `userData` \n- `size` \n- `totalPages` \n- `jobName` \n- `qualifiedJobName` \n- `formType` \n\nSeparate selections with commas (,). You must reload the Spooled File list for these changes to take affect.",
             "default":"status, totalPages, creationTime, userData"
           },
           "vscode-ibmi-queues.splfBrowser.treeItemDescriptionLabels":{"type":"boolean","markdownDescription":"Add labels to values added to description, example Time: "},

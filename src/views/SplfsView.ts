@@ -426,7 +426,10 @@ function buildDescriptionTextfromPattern(splf: IBMiSpooledFile): string {
       newName += `, ${configLabels?' Page Length: ':''}${splf.pageLength}`;
       break;
     case `qualifiedJobName`:
-      newName += `, ${configLabels?' Job: ':''}${splf.qualifiedJobName.replace(/[/]/, '-')}`;
+      newName += `, ${configLabels?' Full Job: ':''}${splf.qualifiedJobName.replace(/[/]/, '-')}`;
+      break;
+    case `jobName`:
+      newName += `, ${configLabels?' Job: ':''}${splf.jobName?.replace(/[/]/, '-')}`;
       break;
     case `formType`:
       newName += `, ${configLabels?' Form: ':''}${splf.formType}`;

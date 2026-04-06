@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.14
+- Added jobName to list of text to show in description of report tree view item
+## 0.0.13
+- Added ability to choose what text is shown in description to reports tree view items
 ## 0.0.12
 - Fixed search view issues from reports and message queue views
 - Added feature from issue #4 (Add more spool file identification to list)
