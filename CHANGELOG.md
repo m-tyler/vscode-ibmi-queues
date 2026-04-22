@@ -1,5 +1,7 @@
 # Change Log
 
+## 0.0.15
+- Found and fixed the bug reported in issue #5 (Error displaying Spool file)
 ## 0.0.14
 - Added jobName to list of text to show in description of report tree view item
 ## 0.0.13

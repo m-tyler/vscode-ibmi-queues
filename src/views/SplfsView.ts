@@ -181,7 +181,7 @@ export default class SPLFBrowser implements TreeDataProvider<any> {
         .concat(`<tr><td>${l10n.t(`Device Type:`)}</td><td>&nbsp;${l10n.t(item.deviceType)}</td></tr>`)
         .concat(`<tr><td>${l10n.t(`Filtering:`)}</td><td>&nbsp;${l10n.t(String(item.parent.filter))}</td></tr>`)
       );
-      console.log(`item.number == ${item.number}`);
+      // console.log(`item.number == ${item.number}`);
       if (showDebugInfo) {
         item.tooltip = item.tooltip.appendMarkdown(``
           .concat(`<tr><td>${l10n.t(`path:`)}</td><td>&nbsp;${item.path}</td></tr>`)

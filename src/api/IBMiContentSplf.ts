@@ -146,7 +146,7 @@ export namespace IBMiContentSplf {
         default:
           // With the use of CPYSPLF and CPY to create a text based stream file in 1208, there are possibilities that the data becomes corrupt
           // in the tempRmt object
-          connection.sendCommand({
+          await connection.sendCommand({
             command: `rm -f ${tempRmt}`
           });
 
