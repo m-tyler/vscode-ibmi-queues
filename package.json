@@ -5,40 +5,21 @@
   "version": "0.0.15",
   "preview": true,
   "license": "MIT",
-  "engines": {
-    "vscode": "^1.90.0"
-  },
-  "author": {
-    "name": "Matt Tyler",
-    "url": "https://github.com/m-tyler/"
-  },
+  "engines": {"vscode": "^1.90.0"},
+  "author": {"name": "Matt Tyler", "url": "https://github.com/m-tyler/"},
   "publisher": "m-tyler",
-  "repository": {
-    "url": "https://github.com/m-tyler/vscode-ibmi-queues"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onStartupFinished",
-    "onFileSystem:SplfFs",
-    "onFileSystem:MsgQFs",
-    "onFileSystem:UsrJobFs"
-  ],
-  "extensionDependencies": [
-    "HalcyonTechLtd.code-for-ibmi"
-  ],
+  "repository": {"url": "https://github.com/m-tyler/vscode-ibmi-queues"},
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished", "onFileSystem:SplfFs", "onFileSystem:MsgQFs", "onFileSystem:UsrJobFs"],
+  "extensionDependencies": ["HalcyonTechLtd.code-for-ibmi"],
   "main": "./dist/extension.js",
   "l10n": "./l10n",
   "contributes": {
-    "configuration": [
+    "configuration"  : [
       {
         "title": "Code for IBM i Queues - Reports",
         "properties": {
-          "vscode-ibmi-queues.splfBrowser.openWithLineSpacing": {
-            "type": "boolean",
-            "markdownDescription": "When checked, the default open will be with line spacing option."
-          },
+          "vscode-ibmi-queues.splfBrowser.openWithLineSpacing": {"type": "boolean", "markdownDescription": "When checked, the default open will be with line spacing option."},
           "vscode-ibmi-queues.splfBrowser.namePattern": {
             "type": "string",
             "markdownDescription": "Additional Spooled File name mapping pattern for when Reports are opened or downloaded.\n\nValid values to choose from; \n- `name` \n- `number` \n- `status` \n- `creationTimestamp` \n- `userData` \n- `size` \n- `totalPages` \n- `pageLength` \n- `qualifiedJobName` \n- `jobName` \n- `jobUser` \n- `jobNumber` \n- `formType` \n- `queueLibrary` \n- `queue` \n\nSeparate selections with commas (,). You must reload the Spooled File list for these changes to take affect.",
@@ -49,1337 +30,299 @@
             "markdownDescription": "Values to use for the description text of the Spooled File items.\n\nValid values to choose from; \n- `status` \n- `creationDate` \n- `creationTime` \n- `userData` \n- `size` \n- `totalPages` \n- `jobName` \n- `qualifiedJobName` \n- `formType` \n\nSeparate selections with commas (,). You must reload the Spooled File list for these changes to take affect.",
             "default": "status, totalPages, creationTime, userData"
           },
-          "vscode-ibmi-queues.splfBrowser.treeItemDescriptionLabels": {
-            "type": "boolean",
-            "markdownDescription": "Add labels to values added to description, example Time: "
-          },
-          "vscode-ibmi-queues.splfBrowser.tempCleanup": {
-            "type": "boolean",
-            "markdownDescription": "When checked and VS Code closes, clean up left over temp reports from users %TMP% folder."
-          },
-          "vscode-ibmi-queues.splfBrowser.enabled": {
-            "type": "boolean",
-            "default": true,
-            "description": "Enable or disable Reports Browser."
-          },
-          "vscode-ibmi-queues.splfBrowser.filters": {
-            "type": "array",
-            "markdownDescription": "Array of USER or OUTQ names to load reports from"
-          }
+          "vscode-ibmi-queues.splfBrowser.treeItemDescriptionLabels": {"type": "boolean", "markdownDescription": "Add labels to values added to description, example Time: "},
+          "vscode-ibmi-queues.splfBrowser.tempCleanup": {"type": "boolean", "markdownDescription": "When checked and VS Code closes, clean up left over temp reports from users %TMP% folder."},
+          "vscode-ibmi-queues.splfBrowser.enabled": {"type": "boolean", "default": true, "description": "Enable or disable Reports Browser."},
+          "vscode-ibmi-queues.splfBrowser.filters": {"type": "array", "markdownDescription": "Array of USER or OUTQ names to load reports from"}
         }
       },
       {
         "title": "Code for IBM i Queues - Message Queue Configuration",
         "properties": {
-          "vscode-ibmi-queues.msgqBrowser.enabled": {
-            "type": "boolean",
-            "default": true,
-            "description": "Enable or disable Message Queue Browser."
-          },
-          "vscode-ibmi-queues.msgqBrowser.filters": {
-            "type": "array",
-            "markdownDescription": "Array of USER or OUTQ names to load messages from"
-          }
+          "vscode-ibmi-queues.msgqBrowser.enabled": {"type": "boolean", "default": true, "description": "Enable or disable Message Queue Browser."                                                                            },
+          "vscode-ibmi-queues.msgqBrowser.filters": {"type": "array",                                                                               "markdownDescription": "Array of USER or OUTQ names to load messages from"}
         }
       },
       {
         "title": "Code for IBM i Queues - User Jobs Configuration",
         "properties": {
-          "vscode-ibmi-queues.userJobBrowser.enabled": {
-            "type": "boolean",
-            "default": true,
-            "description": "Enable or disable User Jobs Browser."
-          },
-          "vscode-ibmi-queues.userJobBrowser.filters": {
-            "type": "array",
-            "markdownDescription": "Array of USER or OUTQ names to load jobs from"
-          }
+          "vscode-ibmi-queues.userJobBrowser.enabled": {"type": "boolean", "default": true, "description": "Enable or disable User Jobs Browser."                                                                        },
+          "vscode-ibmi-queues.userJobBrowser.filters": {"type": "array",                                                                           "markdownDescription": "Array of USER or OUTQ names to load jobs from"}
         }
       }
     ],
     "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "Queues-SpooledFile-Search",
-          "title": "Reports",
-          "icon": "$(files)"
-        },
-        {
-          "id": "Queues-Message-Search",
-          "title": "Message Queue Messages",
-          "icon": "$(email)",
-          "when": "config.vscode-ibmi-queues.msgqBrowser"
-        }
-      ]
+      "activitybar": [ {"id": "Queues-SpooledFile-Search", "title": "Reports", "icon": "$(files)"}, {"id": "Queues-Message-Search", "title": "Message Queue Messages", "icon": "$(email)", "when": "config.vscode-ibmi-queues.msgqBrowser"} ]
     },
-    "views": {
-      "ibmi-explorer": [
-        {
-          "id": "Queues-SpoolfedBrowser",
-          "name": "IBM i Queues - Report Browser",
-          "when": "code-for-ibmi:connected && vscode-ibmi-queues.Queues-SpoolfedBrowser:splfBrowserDisabled !== true ",
-          "visibility": "collapsed",
-          "icon": ""
-        },
-        {
-          "id": "Queues-MessageBrowser",
-          "name": "IBM i Queues - Message Browser",
-          "when": "code-for-ibmi:connected && vscode-ibmi-queues.Queues-MessageBrowser:msgqBrowserDisabled !== true",
-          "visibility": "collapsed",
-          "icon": ""
-        },
-        {
-          "id": "Queues-UserJobBrowser",
-          "name": "IBM i Queues - User Jobs Browser",
-          "when": "code-for-ibmi:connected && vscode-ibmi-queues.Queues-UserJobBrowser:userJobBrowserDisabled !== true",
-          "visibility": "collapsed",
-          "icon": ""
-        }
+    "views"          : {
+      "ibmi-explorer"            : [
+        {"id": "Queues-SpoolfedBrowser", "name": "IBM i Queues - Report Browser",    "when": "code-for-ibmi:connected && vscode-ibmi-queues.Queues-SpoolfedBrowser:splfBrowserDisabled !== true ",  "visibility": "collapsed", "icon": ""},
+        {"id": "Queues-MessageBrowser",  "name": "IBM i Queues - Message Browser",   "when": "code-for-ibmi:connected && vscode-ibmi-queues.Queues-MessageBrowser:msgqBrowserDisabled !== true",    "visibility": "collapsed", "icon": ""},
+        {"id": "Queues-UserJobBrowser",  "name": "IBM i Queues - User Jobs Browser", "when": "code-for-ibmi:connected && vscode-ibmi-queues.Queues-UserJobBrowser:userJobBrowserDisabled !== true", "visibility": "collapsed", "icon": ""}
       ],
-      "Queues-SpooledFile-Search": [
-        {
-          "id": "Queues-SpooledFileSearchView",
-          "name": "SPLF-Search_Results",
-          "when": "vscode-ibmi-queues.Queues-SpooledFileSearchView:searchViewVisible",
-          "icon": ""
-        }
-      ],
-      "Queues-Message-Search": [
-        {
-          "id": "Queues-MsgqSearchView",
-          "name": "MSGQ-Search_Results",
-          "when": "vscode-ibmi-queues.Queues-MsgqSearchView:searchViewVisible && config.vscode-ibmi-queues.msgqBrowser",
-          "icon": ""
-        }
-      ]
+      "Queues-SpooledFile-Search": [ {"id": "Queues-SpooledFileSearchView", "name": "SPLF-Search_Results", "when": "vscode-ibmi-queues.Queues-SpooledFileSearchView:searchViewVisible", "icon": ""} ],
+      "Queues-Message-Search"    : [ {"id": "Queues-MsgqSearchView", "name": "MSGQ-Search_Results", "when": "vscode-ibmi-queues.Queues-MsgqSearchView:searchViewVisible && config.vscode-ibmi-queues.msgqBrowser", "icon": ""} ]
     },
-    "commands": [
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.filter",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Filter Reports",
-        "category": "IBM i SPLF",
-        "icon": "$(filter)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.search",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Search Reports",
-        "category": "IBM i SPLF",
-        "icon": "$(search-fuzzy)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.addUserFilter",
-        "title": "Add User Spooled File Filter",
-        "category": "IBM i SPLF",
-        "enablement": "code-for-ibmi:connected == true",
-        "icon": "$(person-add)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.addOUTQFilter",
-        "title": "Add OUTQ Spooled File Filter",
-        "category": "IBM i SPLF",
-        "enablement": "code-for-ibmi:connected == true",
-        "icon": "$(add)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.removeFilter",
-        "title": "Remove Spooled File Filter",
-        "category": "IBM i SPLF",
-        "enablement": "code-for-ibmi:connected == true",
-        "icon": "$(trash)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.deleteAll",
-        "title": "Delete All Reports",
-        "category": "IBM i SPLF",
-        "enablement": "code-for-ibmi:connected == true",
-        "icon": "$(trash)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.sortFilter",
-        "title": "Sort Filters",
-        "category": "IBM i SPLF",
-        "enablement": "code-for-ibmi:connected == true",
-        "icon": "$(list-ordered)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.delete",
-        "title": "Delete SELECTED Spooled File",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(trash)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.deleteNamed",
-        "title": "Delete like NAMED Reports",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(trash)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.removeFiltered",
-        "title": "Delete like FILTERED Reports",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(trash)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.move",
-        "title": "Move to New Output Queue",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(move)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.downloadDefault",
-        "title": "without Line Spacing",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(down)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.downloadWithLineSpacing",
-        "title": "with Line Spacing",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(down)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.refreshBrowser",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Refresh Spooled File Browser",
-        "category": "IBM i SPLF",
-        "icon": "$(refresh)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.sortFilesByName",
-        "title": "Name",
-        "category": "IBM i SPLF"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.sortFilesByDate",
-        "title": "Date",
-        "category": "IBM i SPLF"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.openWithDefault",
-        "enablement": "code-for-ibmi:connected",
-        "title": "with Defaults",
-        "category": "IBM i SPLF"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.openWithLineSpacing",
-        "enablement": "code-for-ibmi:connected",
-        "title": "with Line Spacing",
-        "category": "IBM i SPLF"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.openasPDF",
-        "enablement": "code-for-ibmi:connected",
-        "title": "as PDF",
-        "category": "IBM i SPLF"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.openWithoutLineSpacing",
-        "enablement": "code-for-ibmi:connected",
-        "title": "without Line Spacing",
-        "category": "IBM i SPLF"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.collapseSearchView",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Collapse All",
-        "category": "IBM i SPLF",
-        "icon": "$(collapse-all)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.expandSearchView",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Expand All",
-        "category": "IBM i SPLF",
-        "icon": "$(expand-all)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.closeSearchView",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Close",
-        "category": "IBM i SPLF",
-        "icon": "$(close)"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.revealBrowser",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Reveal in Spooled File Browser",
-        "category": "IBM i SPLF"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.createUpdatedSPOOLED_FILE_DATA_TF",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Create updated version of SPOOLED_FILE_DATA ",
-        "category": "IBM i SPLF"
-      },
-      {
-        "command": "vscode-ibmi-queues.splfbrowser.dropUpdatedSPOOLED_FILE_DATA_TF",
-        "enablement": "code-for-ibmi:connected",
-        "title": "drop updated version of SPOOLED_FILE_DATA ",
-        "category": "IBM i SPLF"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.filter",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Filter Messages",
-        "category": "IBM i FS",
-        "icon": "$(list-filter)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.filterInquiry",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Toggle to/from INQUIRY Messages",
-        "category": "IBM i FS",
-        "icon": "$(question)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.search",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Search Messages",
-        "category": "IBM i Messages",
-        "icon": "$(search)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.searchBrowser",
-        "title": "Search Messages",
-        "category": "IBM i",
-        "icon": "$(search-fuzzy)",
-        "enablement": "code-for-ibmi:connected",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.addFilter",
-        "title": "Add Message Queue Filter",
-        "category": "IBM i Messages",
-        "enablement": "code-for-ibmi:connected == true",
-        "icon": "$(add)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.addUserFilter",
-        "title": "Add User Message Filter",
-        "category": "IBM i Messages",
-        "enablement": "code-for-ibmi:connected == true",
-        "icon": "$(person-add)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.removeFilter",
-        "title": "Remove Message Queue Filter",
-        "category": "IBM i Messages",
-        "enablement": "code-for-ibmi:connected == true",
-        "icon": "$(trash)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.sortFilter",
-        "title": "Sort Filters",
-        "category": "IBM i Messages",
-        "enablement": "code-for-ibmi:connected == true",
-        "icon": "$(list-ordered)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.ReplyToUnanswered",
-        "title": "Answer Message",
-        "category": "IBM i Messages",
-        "enablement": "code-for-ibmi:connected == true",
-        "icon": "$(reply)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.deleteAll",
-        "title": "Delete All Messages",
-        "category": "IBM i Messages",
-        "enablement": "code-for-ibmi:connected == true",
-        "icon": "$(clear-all)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.deleteAllButUnanswered",
-        "title": "Delete All Messages Except Unanswered",
-        "category": "IBM i Messages",
-        "enablement": "code-for-ibmi:connected == true",
-        "icon": "$(combine)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.delete",
-        "title": "Delete SELECTED Message",
-        "enablement": "code-for-ibmi:connected",
-        "category": "IBM i Messages",
-        "icon": "$(delete)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.deleteByID",
-        "title": "Delete by Message ID",
-        "enablement": "code-for-ibmi:connected",
-        "category": "IBM i Messages",
-        "icon": "$(delete)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.deleteFiltered",
-        "title": "Delete all FILTERED messages",
-        "enablement": "code-for-ibmi:connected",
-        "category": "IBM i Messages",
-        "icon": "$(delete)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.refreshBrowser",
-        "title": "Refresh Message Queue Browser",
-        "enablement": "code-for-ibmi:connected",
-        "category": "IBM i Messages",
-        "icon": "$(refresh)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.refresh",
-        "title": "Refresh Message Queue",
-        "enablement": "code-for-ibmi:connected",
-        "category": "IBM i Messages",
-        "icon": "$(refresh)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.sortByID",
-        "title": "Name",
-        "enablement": "code-for-ibmi:connected",
-        "category": "IBM i Messages",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.sortByDate",
-        "title": "Date",
-        "enablement": "code-for-ibmi:connected",
-        "category": "IBM i Messages",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.collapseSearchView",
-        "title": "Collapse All Search Results",
-        "enablement": "code-for-ibmi:connected",
-        "category": "IBM i Messages",
-        "icon": "$(collapse-all)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.expandSearchView",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Expand All Search Results",
-        "category": "IBM i Messages",
-        "icon": "$(expand-all)",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.closeSearchView",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Close Search View",
-        "category": "IBM i Messages",
-        "icon": "$(close)"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.revealBrowser",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Reveal in User MSGQ Browser",
-        "category": "IBM i Messages",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.viewMessageDetails",
-        "enablement": "code-for-ibmi:connected",
-        "title": "View Message Details",
-        "category": "IBM i Messages",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.sendMessage",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Send Message",
-        "category": "IBM i Messages",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.messageBrowser.sendInquiryMessage",
-        "enablement": "code-for-ibmi:connected",
-        "title": "Send Inquiry Message",
-        "category": "IBM i Messages",
-        "when": "config.vscode-ibmi-queues.msgqBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.userJobBrowser.sortByID",
-        "title": "Sort Jobs by Name ",
-        "category": "IBM i User Jobs",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(sort-precedence)",
-        "when": "config.vscode-ibmi-queues.userJobBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.userJobBrowser.sortByDate",
-        "title": "Sort Jobs by Entry Date",
-        "category": "IBM i User Jobs",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(sort-precedence)",
-        "when": "config.vscode-ibmi-queues.userJobBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.userJobBrowser.refreshBrowser",
-        "title": "Refresh User Jobs List",
-        "category": "IBM i User Jobs",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(refresh)",
-        "when": "config.vscode-ibmi-queues.userJobBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.userJobBrowser.refresh",
-        "title": "Refresh User Jobs",
-        "category": "IBM i User Jobs",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(refresh)",
-        "when": "config.vscode-ibmi-queues.userJobBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.userJobBrowser.revealBrowser",
-        "title": "Reveal User Job Browser",
-        "category": "IBM i User Jobs",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(open-preview)",
-        "when": "config.vscode-ibmi-queues.userJobBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.userJobBrowser.addFilter",
-        "title": "Add User Job List Filter",
-        "category": "IBM i User Jobs",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(person-add)",
-        "when": "config.vscode-ibmi-queues.userJobBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.userJobBrowser.sortFilter",
-        "title": "Sort User Job Filter",
-        "category": "IBM i User Jobs",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(list-ordered)",
-        "when": "config.vscode-ibmi-queues.userJobBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.userJobBrowser.removeFilter",
-        "title": "Remove User Job Filter",
-        "category": "IBM i User Jobs",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(trash)",
-        "when": "config.vscode-ibmi-queues.userJobBrowser.userJobBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.userJobBrowser.filterMSGW",
-        "title": "Filter Jobs by MSGW status",
-        "category": "IBM i User Jobs",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(question)",
-        "when": "config.vscode-ibmi-queues.userJobBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.userJobBrowser.filter",
-        "title": "Filter Jobs by Value",
-        "category": "IBM i User Jobs",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(filter)",
-        "when": "config.vscode-ibmi-queues.userJobBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.userJobBrowser.viewDetails",
-        "title": "View User Job Details",
-        "category": "IBM i User Jobs",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(report)",
-        "when": "config.vscode-ibmi-queues.userJobBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.userJobBrowser.viewJoblog",
-        "title": "View Job Log",
-        "category": "IBM i User Jobs",
-        "enablement": "code-for-ibmi:connected",
-        "icon": "$(report)",
-        "when": "config.vscode-ibmi-queues.userJobBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.userJobBrowser.ReplyToJobMessage",
-        "title": "Answer Job's Message",
-        "category": "IBM i User Jobs",
-        "enablement": "code-for-ibmi:connected == true",
-        "icon": "$(reply)",
-        "when": "config.vscode-ibmi-queues.userJobBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.userJobBrowser.HoldJob",
-        "title": "Hold Job",
-        "category": "IBM i User Jobs",
-        "enablement": "code-for-ibmi:connected == true",
-        "icon": "$(pause)",
-        "when": "config.vscode-ibmi-queues.userJobBrowser"
-      },
-      {
-        "command": "vscode-ibmi-queues.userJobBrowser.release",
-        "title": "Release Job",
-        "category": "IBM i User Jobs",
-        "enablement": "code-for-ibm:connected == true",
-        "icon": "$(play)",
-        "when": "config.vscode-ibmi-queues.userJobBrowser"
-      }
+    "commands"       : [
+      {"command": "vscode-ibmi-queues.splfbrowser.filter", "enablement": "code-for-ibmi:connected", "title": "Filter Reports", "category": "IBM i SPLF", "icon": "$(filter)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.search", "enablement": "code-for-ibmi:connected", "title": "Search Reports", "category": "IBM i SPLF", "icon": "$(search-fuzzy)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.addUserFilter", "title": "Add User Spooled File Filter", "category": "IBM i SPLF", "enablement": "code-for-ibmi:connected == true", "icon": "$(person-add)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.addOUTQFilter", "title": "Add OUTQ Spooled File Filter", "category": "IBM i SPLF", "enablement": "code-for-ibmi:connected == true", "icon": "$(add)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.removeFilter", "title": "Remove Spooled File Filter", "category": "IBM i SPLF", "enablement": "code-for-ibmi:connected == true", "icon": "$(trash)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.deleteAll", "title": "Delete All Reports", "category": "IBM i SPLF", "enablement": "code-for-ibmi:connected == true", "icon": "$(trash)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.sortFilter", "title": "Sort Filters", "category": "IBM i SPLF", "enablement": "code-for-ibmi:connected == true", "icon": "$(list-ordered)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.delete", "title": "Delete SELECTED Spooled File", "enablement": "code-for-ibmi:connected", "icon": "$(trash)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.deleteNamed", "title": "Delete like NAMED Reports", "enablement": "code-for-ibmi:connected", "icon": "$(trash)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.removeFiltered", "title": "Delete like FILTERED Reports", "enablement": "code-for-ibmi:connected", "icon": "$(trash)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.move", "title": "Move to New Output Queue", "enablement": "code-for-ibmi:connected", "icon": "$(move)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.downloadDefault", "title": "without Line Spacing", "enablement": "code-for-ibmi:connected", "icon": "$(down)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.downloadWithLineSpacing", "title": "with Line Spacing", "enablement": "code-for-ibmi:connected", "icon": "$(down)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.refreshBrowser", "enablement": "code-for-ibmi:connected", "title": "Refresh Spooled File Browser", "category": "IBM i SPLF", "icon": "$(refresh)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.sortFilesByName", "title": "Name", "category": "IBM i SPLF"},
+      {"command": "vscode-ibmi-queues.splfbrowser.sortFilesByDate", "title": "Date", "category": "IBM i SPLF"},
+      {"command": "vscode-ibmi-queues.splfbrowser.openWithDefault", "enablement": "code-for-ibmi:connected", "title": "with Defaults", "category": "IBM i SPLF"},
+      {"command": "vscode-ibmi-queues.splfbrowser.openWithLineSpacing", "enablement": "code-for-ibmi:connected", "title": "with Line Spacing", "category": "IBM i SPLF"},
+      {"command": "vscode-ibmi-queues.splfbrowser.openasPDF", "enablement": "code-for-ibmi:connected", "title": "as PDF", "category": "IBM i SPLF"},
+      {"command": "vscode-ibmi-queues.splfbrowser.openWithoutLineSpacing", "enablement": "code-for-ibmi:connected", "title": "without Line Spacing", "category": "IBM i SPLF"},
+      {"command": "vscode-ibmi-queues.splfbrowser.collapseSearchView", "enablement": "code-for-ibmi:connected", "title": "Collapse All", "category": "IBM i SPLF", "icon": "$(collapse-all)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.expandSearchView", "enablement": "code-for-ibmi:connected", "title": "Expand All", "category": "IBM i SPLF", "icon": "$(expand-all)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.closeSearchView", "enablement": "code-for-ibmi:connected", "title": "Close", "category": "IBM i SPLF", "icon": "$(close)"},
+      {"command": "vscode-ibmi-queues.splfbrowser.revealBrowser", "enablement": "code-for-ibmi:connected", "title": "Reveal in Spooled File Browser", "category": "IBM i SPLF"},
+      {"command": "vscode-ibmi-queues.splfbrowser.createUpdatedSPOOLED_FILE_DATA_TF", "enablement": "code-for-ibmi:connected", "title": "Create updated version of SPOOLED_FILE_DATA ", "category": "IBM i SPLF"},
+      {"command": "vscode-ibmi-queues.splfbrowser.dropUpdatedSPOOLED_FILE_DATA_TF", "enablement": "code-for-ibmi:connected", "title": "drop updated version of SPOOLED_FILE_DATA ", "category": "IBM i SPLF"},
+      {"command": "vscode-ibmi-queues.messageBrowser.filter", "enablement": "code-for-ibmi:connected", "title": "Filter Messages", "category": "IBM i FS", "icon": "$(list-filter)", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.filterInquiry", "enablement": "code-for-ibmi:connected", "title": "Toggle to/from INQUIRY Messages", "category": "IBM i FS", "icon": "$(question)", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.search", "enablement": "code-for-ibmi:connected", "title": "Search Messages", "category": "IBM i Messages", "icon": "$(search)", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.searchBrowser", "title": "Search Messages", "category": "IBM i", "icon": "$(search-fuzzy)", "enablement": "code-for-ibmi:connected", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.addFilter", "title": "Add Message Queue Filter", "category": "IBM i Messages", "enablement": "code-for-ibmi:connected == true", "icon": "$(add)", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.addUserFilter", "title": "Add User Message Filter", "category": "IBM i Messages", "enablement": "code-for-ibmi:connected == true", "icon": "$(person-add)", "when": "config.vscode-ibmi-queues.msgqBrowser" }, {"command": "vscode-ibmi-queues.messageBrowser.removeFilter", "title": "Remove Message Queue Filter", "category": "IBM i Messages", "enablement": "code-for-ibmi:connected == true", "icon": "$(trash)", "when": "config.vscode-ibmi-queues.msgqBrowser" },
+      {"command": "vscode-ibmi-queues.messageBrowser.sortFilter", "title": "Sort Filters", "category": "IBM i Messages", "enablement": "code-for-ibmi:connected == true", "icon": "$(list-ordered)", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.ReplyToUnanswered", "title": "Answer Message", "category": "IBM i Messages", "enablement": "code-for-ibmi:connected == true", "icon": "$(reply)", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.deleteAll", "title": "Delete All Messages", "category": "IBM i Messages", "enablement": "code-for-ibmi:connected == true", "icon": "$(clear-all)", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.deleteAllButUnanswered", "title": "Delete All Messages Except Unanswered", "category": "IBM i Messages", "enablement": "code-for-ibmi:connected == true", "icon": "$(combine)", "when": "config.vscode-ibmi-queues.msgqBrowser" }, {"command": "vscode-ibmi-queues.messageBrowser.delete", "title": "Delete SELECTED Message", "enablement": "code-for-ibmi:connected", "category": "IBM i Messages", "icon": "$(delete)", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.deleteByID", "title": "Delete by Message ID", "enablement": "code-for-ibmi:connected", "category": "IBM i Messages", "icon": "$(delete)", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.deleteFiltered", "title": "Delete all FILTERED messages", "enablement": "code-for-ibmi:connected", "category": "IBM i Messages", "icon": "$(delete)", "when": "config.vscode-ibmi-queues.msgqBrowser" },
+      {"command": "vscode-ibmi-queues.messageBrowser.refreshBrowser", "title": "Refresh Message Queue Browser", "enablement": "code-for-ibmi:connected", "category": "IBM i Messages", "icon": "$(refresh)", "when": "config.vscode-ibmi-queues.msgqBrowser" },
+      {"command": "vscode-ibmi-queues.messageBrowser.refresh", "title": "Refresh Message Queue", "enablement": "code-for-ibmi:connected", "category": "IBM i Messages", "icon": "$(refresh)", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.sortByID", "title": "Name", "enablement": "code-for-ibmi:connected", "category": "IBM i Messages", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.sortByDate", "title": "Date", "enablement": "code-for-ibmi:connected", "category": "IBM i Messages", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.collapseSearchView", "title": "Collapse All Search Results", "enablement": "code-for-ibmi:connected", "category": "IBM i Messages", "icon": "$(collapse-all)", "when": "config.vscode-ibmi-queues.msgqBrowser" },
+      {"command": "vscode-ibmi-queues.messageBrowser.expandSearchView", "enablement": "code-for-ibmi:connected", "title": "Expand All Search Results", "category": "IBM i Messages", "icon": "$(expand-all)", "when": "config.vscode-ibmi-queues.msgqBrowser" },
+      {"command": "vscode-ibmi-queues.messageBrowser.closeSearchView", "enablement": "code-for-ibmi:connected", "title": "Close Search View", "category": "IBM i Messages", "icon": "$(close)"},
+      {"command": "vscode-ibmi-queues.messageBrowser.revealBrowser", "enablement": "code-for-ibmi:connected", "title": "Reveal in User MSGQ Browser", "category": "IBM i Messages", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.viewMessageDetails", "enablement": "code-for-ibmi:connected", "title": "View Message Details", "category": "IBM i Messages", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.sendMessage", "enablement": "code-for-ibmi:connected", "title": "Send Message", "category": "IBM i Messages", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.messageBrowser.sendInquiryMessage", "enablement": "code-for-ibmi:connected", "title": "Send Inquiry Message", "category": "IBM i Messages", "when": "config.vscode-ibmi-queues.msgqBrowser"},
+      {"command": "vscode-ibmi-queues.userJobBrowser.sortByID", "title": "Sort Jobs by Name ", "category": "IBM i User Jobs", "enablement": "code-for-ibmi:connected", "icon": "$(sort-precedence)", "when": "config.vscode-ibmi-queues.userJobBrowser"},
+      {"command": "vscode-ibmi-queues.userJobBrowser.sortByDate", "title": "Sort Jobs by Entry Date", "category": "IBM i User Jobs", "enablement": "code-for-ibmi:connected", "icon": "$(sort-precedence)", "when": "config.vscode-ibmi-queues.userJobBrowser" },
+      {"command": "vscode-ibmi-queues.userJobBrowser.refreshBrowser", "title": "Refresh User Jobs List", "category": "IBM i User Jobs", "enablement": "code-for-ibmi:connected", "icon": "$(refresh)", "when": "config.vscode-ibmi-queues.userJobBrowser" },
+      {"command": "vscode-ibmi-queues.userJobBrowser.refresh", "title": "Refresh User Jobs", "category": "IBM i User Jobs", "enablement": "code-for-ibmi:connected", "icon": "$(refresh)", "when": "config.vscode-ibmi-queues.userJobBrowser"},
+      {"command": "vscode-ibmi-queues.userJobBrowser.revealBrowser", "title": "Reveal User Job Browser", "category": "IBM i User Jobs", "enablement": "code-for-ibmi:connected", "icon": "$(open-preview)", "when": "config.vscode-ibmi-queues.userJobBrowser" },
+      {"command": "vscode-ibmi-queues.userJobBrowser.addFilter", "title": "Add User Job List Filter", "category": "IBM i User Jobs", "enablement": "code-for-ibmi:connected", "icon": "$(person-add)", "when": "config.vscode-ibmi-queues.userJobBrowser" },
+      {"command": "vscode-ibmi-queues.userJobBrowser.sortFilter", "title": "Sort User Job Filter", "category": "IBM i User Jobs", "enablement": "code-for-ibmi:connected", "icon": "$(list-ordered)", "when": "config.vscode-ibmi-queues.userJobBrowser" },
+      {"command": "vscode-ibmi-queues.userJobBrowser.removeFilter", "title": "Remove User Job Filter", "category": "IBM i User Jobs", "enablement": "code-for-ibmi:connected", "icon": "$(trash)", "when": "config.vscode-ibmi-queues.userJobBrowser.userJobBrowser" },
+      {"command": "vscode-ibmi-queues.userJobBrowser.filterMSGW", "title": "Filter Jobs by MSGW status", "category": "IBM i User Jobs", "enablement": "code-for-ibmi:connected", "icon": "$(question)", "when": "config.vscode-ibmi-queues.userJobBrowser" },
+      {"command": "vscode-ibmi-queues.userJobBrowser.filter", "title": "Filter Jobs by Value", "category": "IBM i User Jobs", "enablement": "code-for-ibmi:connected", "icon": "$(filter)", "when": "config.vscode-ibmi-queues.userJobBrowser"},
+      {"command": "vscode-ibmi-queues.userJobBrowser.viewDetails", "title": "View User Job Details", "category": "IBM i User Jobs", "enablement": "code-for-ibmi:connected", "icon": "$(report)", "when": "config.vscode-ibmi-queues.userJobBrowser"},
+      {"command": "vscode-ibmi-queues.userJobBrowser.viewJoblog", "title": "View Job Log", "category": "IBM i User Jobs", "enablement": "code-for-ibmi:connected", "icon": "$(report)", "when": "config.vscode-ibmi-queues.userJobBrowser"},
+      {"command": "vscode-ibmi-queues.userJobBrowser.ReplyToJobMessage", "title": "Answer Job's Message", "category": "IBM i User Jobs", "enablement": "code-for-ibmi:connected == true", "icon": "$(reply)", "when": "config.vscode-ibmi-queues.userJobBrowser" },
+      {"command": "vscode-ibmi-queues.userJobBrowser.HoldJob", "title": "Hold Job", "category": "IBM i User Jobs", "enablement": "code-for-ibmi:connected == true", "icon": "$(pause)", "when": "config.vscode-ibmi-queues.userJobBrowser"},
+      {"command": "vscode-ibmi-queues.userJobBrowser.release", "title": "Release Job", "category": "IBM i User Jobs", "enablement": "code-for-ibm:connected == true", "icon": "$(play)", "when": "config.vscode-ibmi-queues.userJobBrowser"}
     ],
-    "submenus": [
-      {
-        "id": "vscode-ibmi-queues.splfbrowser.sortSpooledFiles",
-        "label": "Sort Reports by"
-      },
-      {
-        "id": "vscode-ibmi-queues.splfbrowser.openSpooledFile",
-        "label": "Open Report"
-      },
-      {
-        "id": "vscode-ibmi-queues.splfbrowser.download",
-        "label": "Download Report"
-      },
-      {
-        "id": "vscode-ibmi-queues.messageBrowser.sort",
-        "label": "Sort List by"
-      },
-      {
-        "id": "vscode-ibmi-queues.messageBrowser.viewMessage",
-        "label": "View"
-      },
-      {
-        "id": "vscode-ibmi-queues.userJobBrowser.sort",
-        "label": "Sort list by"
-      },
-      {
-        "id": "vscode-ibmi-queues.userJobBrowser.view",
-        "label": "View"
-      }
+    "submenus"       : [
+      {"id": "vscode-ibmi-queues.splfbrowser.sortSpooledFiles", "label": "Sort Reports by"},
+      {"id": "vscode-ibmi-queues.splfbrowser.openSpooledFile",  "label": "Open Report"    },
+      {"id": "vscode-ibmi-queues.splfbrowser.download",         "label": "Download Report"},
+      {"id": "vscode-ibmi-queues.messageBrowser.sort",          "label": "Sort List by"   },
+      {"id": "vscode-ibmi-queues.messageBrowser.viewMessage",   "label": "View"           },
+      {"id": "vscode-ibmi-queues.userJobBrowser.sort",          "label": "Sort list by"   },
+      {"id": "vscode-ibmi-queues.userJobBrowser.view",          "label": "View"           }
     ],
-    "menus": {
+    "menus"          : {
       "view/title": [
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.closeSearchView",
-          "when": "view == Queues-SpooledFileSearchView",
-          "group": "navigation@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.collapseSearchView",
-          "when": "view == Queues-SpooledFileSearchView",
-          "group": "navigation@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.refreshBrowser",
-          "when": "view == Queues-SpoolfedBrowser",
-          "group": "navigation@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.addOUTQFilter",
-          "when": "view == Queues-SpoolfedBrowser",
-          "group": "navigation@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.addUserFilter",
-          "when": "view == Queues-SpoolfedBrowser",
-          "group": "navigation@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.sortFilter",
-          "when": "view == Queues-SpoolfedBrowser",
-          "group": "navigation@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.addFilter",
-          "when": "view == Queues-MessageBrowser",
-          "group": "navigation@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.addUserFilter",
-          "when": "view == Queues-MessageBrowser",
-          "group": "navigation@3"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.refreshBrowser",
-          "when": "view == Queues-MessageBrowser",
-          "group": "navigation@4"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.sortFilter",
-          "when": "view == Queues-MessageBrowser",
-          "group": "navigation@5"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.searchBrowser",
-          "when": "view == Queues-MessageBrowser",
-          "group": "navigation@6"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.closeSearchView",
-          "when": "view == Queues-MsgqSearchView",
-          "group": "navigation@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.collapseSearchView",
-          "when": "view == Queues-MsgqSearchView",
-          "group": "navigation@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.expandSearchView",
-          "when": "view == Queues-MsgqSearchView",
-          "group": "navigation@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.addFilter",
-          "when": "view == Queues-UserJobBrowser",
-          "group": "navigation@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.refreshBrowser",
-          "when": "view == Queues-UserJobBrowser",
-          "group": "navigation@3"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.sortFilter",
-          "when": "view == Queues-UserJobBrowser",
-          "group": "navigation@4"
-        }
+        {"command": "vscode-ibmi-queues.splfbrowser.closeSearchView",       "when": "view == Queues-SpooledFileSearchView", "group": "navigation@2"},
+        {"command": "vscode-ibmi-queues.splfbrowser.collapseSearchView",    "when": "view == Queues-SpooledFileSearchView", "group": "navigation@1"},
+        {"command": "vscode-ibmi-queues.splfbrowser.refreshBrowser",        "when": "view == Queues-SpoolfedBrowser",       "group": "navigation@1"},
+        {"command": "vscode-ibmi-queues.splfbrowser.addOUTQFilter",         "when": "view == Queues-SpoolfedBrowser",       "group": "navigation@1"},
+        {"command": "vscode-ibmi-queues.splfbrowser.addUserFilter",         "when": "view == Queues-SpoolfedBrowser",       "group": "navigation@1"},
+        {"command": "vscode-ibmi-queues.splfbrowser.sortFilter",            "when": "view == Queues-SpoolfedBrowser",       "group": "navigation@1"},
+        {"command": "vscode-ibmi-queues.messageBrowser.addFilter",          "when": "view == Queues-MessageBrowser",        "group": "navigation@2"},
+        {"command": "vscode-ibmi-queues.messageBrowser.addUserFilter",      "when": "view == Queues-MessageBrowser",        "group": "navigation@3"},
+        {"command": "vscode-ibmi-queues.messageBrowser.refreshBrowser",     "when": "view == Queues-MessageBrowser",        "group": "navigation@4"},
+        {"command": "vscode-ibmi-queues.messageBrowser.sortFilter",         "when": "view == Queues-MessageBrowser",        "group": "navigation@5"},
+        {"command": "vscode-ibmi-queues.messageBrowser.searchBrowser",      "when": "view == Queues-MessageBrowser",        "group": "navigation@6"},
+        {"command": "vscode-ibmi-queues.messageBrowser.closeSearchView",    "when": "view == Queues-MsgqSearchView",        "group": "navigation@2"},
+        {"command": "vscode-ibmi-queues.messageBrowser.collapseSearchView", "when": "view == Queues-MsgqSearchView",        "group": "navigation@1"},
+        {"command": "vscode-ibmi-queues.messageBrowser.expandSearchView",   "when": "view == Queues-MsgqSearchView",        "group": "navigation@1"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.addFilter",          "when": "view == Queues-UserJobBrowser",        "group": "navigation@2"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.refreshBrowser",     "when": "view == Queues-UserJobBrowser",        "group": "navigation@3"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.sortFilter",         "when": "view == Queues-UserJobBrowser",        "group": "navigation@4"}
       ],
       "vscode-ibmi-queues.splfbrowser.openSpooledFile": [
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.openWithDefault"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.openWithLineSpacing"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.openWithoutLineSpacing"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.openasPDF"
-        }
+        {"command": "vscode-ibmi-queues.splfbrowser.openWithDefault"       }, {"command": "vscode-ibmi-queues.splfbrowser.openWithLineSpacing"   }, {"command": "vscode-ibmi-queues.splfbrowser.openWithoutLineSpacing"},
+        {"command": "vscode-ibmi-queues.splfbrowser.openasPDF"             }
       ],
-      "vscode-ibmi-queues.splfbrowser.sortSpooledFiles": [
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.sortFilesByName"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.sortFilesByDate"
-        }
-      ],
-      "vscode-ibmi-queues.splfbrowser.download": [
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.downloadDefault"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.downloadWithLineSpacing"
-        }
-      ],
-      "vscode-ibmi-queues.messageBrowser.sort": [
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.sortByID"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.sortByDate"
-        }
-      ],
-      "vscode-ibmi-queues.messageBrowser.viewMessage": [
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.viewMessageDetails"
-        }
-      ],
-      "vscode-ibmi-queues.userJobBrowser.sort": [
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.sortByID"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.sortByDate"
-        }
-      ],
-      "vscode-ibmi-queues.userJobBrowser.view": [
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.viewDetails",
-          "group": "navigation@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.viewJoblog",
-          "group": "navigation@2"
-        }
-      ],
+      "vscode-ibmi-queues.splfbrowser.sortSpooledFiles": [ {"command": "vscode-ibmi-queues.splfbrowser.sortFilesByName"}, {"command": "vscode-ibmi-queues.splfbrowser.sortFilesByDate"} ],
+      "vscode-ibmi-queues.splfbrowser.download": [ {"command": "vscode-ibmi-queues.splfbrowser.downloadDefault"}, {"command": "vscode-ibmi-queues.splfbrowser.downloadWithLineSpacing"} ],
+      "vscode-ibmi-queues.messageBrowser.sort": [ {"command": "vscode-ibmi-queues.messageBrowser.sortByID"}, {"command": "vscode-ibmi-queues.messageBrowser.sortByDate"} ],
+      "vscode-ibmi-queues.messageBrowser.viewMessage": [ {"command": "vscode-ibmi-queues.messageBrowser.viewMessageDetails"} ],
+      "vscode-ibmi-queues.userJobBrowser.sort": [ {"command": "vscode-ibmi-queues.userJobBrowser.sortByID"}, {"command": "vscode-ibmi-queues.userJobBrowser.sortByDate"} ],
+      "vscode-ibmi-queues.userJobBrowser.view": [ {"command": "vscode-ibmi-queues.userJobBrowser.viewDetails", "group": "navigation@1"}, {"command": "vscode-ibmi-queues.userJobBrowser.viewJoblog", "group": "navigation@2"} ],
       "view/item/context": [
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.refreshBrowser",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^splflist.*$/",
-          "group": "inline@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.filter",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^splflist.*$/",
-          "group": "inline@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.removeFilter",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^splflist.*$/",
-          "group": "inline@3"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.delete",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile$/",
-          "group": "inline@4"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.filter",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^splflist.*$/",
-          "group": "4_splfuser@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.search",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^splflist.*$/",
-          "group": "4_splfuser@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.removeFilter",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^splflist.*$/",
-          "group": "5_splfuser@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.deleteAll",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^splflist$/",
-          "group": "5_splfuser@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.delete",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile$/ ",
-          "group": "3_spooledfile@0"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.deleteNamed",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile$/ ",
-          "group": "3_spooledfile@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.removeFiltered",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile$/ ",
-          "group": "3_spooledfile@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.move",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile$/",
-          "group": "2_spooledfile@3"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.search",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile.*$/",
-          "group": "1_spooledfile@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.filter",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile.*$/",
-          "group": "1_spooledfile@1"
-        },
-        {
-          "submenu": "vscode-ibmi-queues.splfbrowser.openSpooledFile",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile.*$/",
-          "group": "0_open@1"
-        },
-        {
-          "submenu": "vscode-ibmi-queues.splfbrowser.sortSpooledFiles",
-          "when": "view == Queues-SpoolfedBrowser",
-          "group": "0_open@3"
-        },
-        {
-          "submenu": "vscode-ibmi-queues.splfbrowser.download",
-          "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile.*$/",
-          "group": "0_open@5"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.refresh",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/",
-          "group": "inline@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.filterInquiry",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/",
-          "group": "inline@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.removeFilter",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/",
-          "group": "inline@3"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.filter",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/",
-          "group": "4_messagequeue@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.filterInquiry",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/",
-          "group": "4_messagequeue@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.search",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/",
-          "group": "4_messagequeue@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.removeFilter",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/",
-          "group": "5_messagequeue@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.deleteAll",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq$/",
-          "group": "5_messagequeue@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.deleteAllButUnanswered",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq$/",
-          "group": "5_messagequeue@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.delete",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^message$/ ",
-          "group": "3_message@0"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.deleteByID",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^message$/ ",
-          "group": "3_message@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.deleteFiltered",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^message$/ ",
-          "group": "3_message@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.ReplyToUnanswered",
-          "when": "view == Queues-MessageBrowser && viewItem == message_INQUIRY_UNANSWERED",
-          "group": "2_message@3"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.search",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^message.*$/",
-          "group": "1_message@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.filter",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^message.*$/",
-          "group": "1_message@1"
-        },
-        {
-          "submenu": "vscode-ibmi-queues.messageBrowser.sort",
-          "when": "view == Queues-MessageBrowser",
-          "group": "1_message@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.sendMessage",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/",
-          "group": "0_open@2"
-        },
-        {
-          "submenu": "vscode-ibmi-queues.messageBrowser.viewMessage",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^message.*$/",
-          "group": "0_open@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.sendInquiryMessage",
-          "when": "view == Queues-MessageBrowser && viewItem =~ /^message.*$/",
-          "group": "0_open@3"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.refresh",
-          "when": "view == Queues-userJobBrowser ",
-          "group": "inline@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.refresh",
-          "when": "view == Queues-userJobBrowser && viewItem =~ /^userJobUser.*/",
-          "group": "inline@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.filter",
-          "when": "view == Queues-userJobBrowser && viewItem =~ /^userJobUser.*/",
-          "group": "inline@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.filterMSGW",
-          "when": "view == Queues-userJobBrowser && viewItem =~ /^userJobUser.*/",
-          "group": "inline@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.removeFilter",
-          "when": "view == Queues-userJobBrowser && viewItem =~ /^userJobUser.*/",
-          "group": "inline@3"
-        },
-        {
-          "submenu": "vscode-ibmi-queues.userJobBrowser.sort",
-          "when": "view == Queues-userJobBrowser && viewItem =~ /^userJobUser.*/",
-          "group": "0_userjobs@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.refresh",
-          "when": "view == Queues-userJobBrowser && viewItem =~ /^userJobUser.*/",
-          "group": "2_userjobs@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.filterMSGW",
-          "when": "view == Queues-userJobBrowser && viewItem =~ /^userJobUser.*/",
-          "group": "3_userjobs@2"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.filter",
-          "when": "view == Queues-userJobBrowser && viewItem =~ /^userJobUser.*/",
-          "group": "3_userjobs@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.removeFilter",
-          "when": "view == Queues-userJobBrowser && viewItem =~ /^userJobUser.*/",
-          "group": "6_userjobs@3"
-        },
-        {
-          "submenu": "vscode-ibmi-queues.userJobBrowser.view",
-          "when": "view == Queues-userJobBrowser && viewItem =~ /^userJobJob.*$/",
-          "group": "0_jobs@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.filter",
-          "when": "view == Queues-userJobBrowser && viewItem =~ /^userJobJob.*$/",
-          "group": "2_jobs@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.filterMSGW",
-          "when": "view == Queues-userJobBrowser && viewItem =~ /^userJobJob.*$/",
-          "group": "2_jobs@1"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.ReplyToJobMessage",
-          "when": "view == Queues-userJobBrowser && viewItem =~ /^userJobJob.*[MSGW]$/",
-          "group": "3_jobs@3"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.HoldJob",
-          "when": "view == Queues-userJobBrowser && viewItem =~ /^userJobJob.+(?<!OUTQ|HLD|HELD)$/",
-          "group": "4_jobs@3"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.release",
-          "when": "view == Queues-userJobBrowser && viewItem =~ /^userJobJob.*(_ACTIVE).*(HLD|HELD)$/",
-          "group": "4_jobs@4"
-        }
+        {"command": "vscode-ibmi-queues.splfbrowser.refreshBrowser", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^splflist.*$/", "group": "inline@1"},
+        {"command": "vscode-ibmi-queues.splfbrowser.filter", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^splflist.*$/", "group": "inline@2"},
+        {"command": "vscode-ibmi-queues.splfbrowser.removeFilter", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^splflist.*$/", "group": "inline@3"},
+        {"command": "vscode-ibmi-queues.splfbrowser.delete", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile$/", "group": "inline@4"},
+        {"command": "vscode-ibmi-queues.splfbrowser.filter", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^splflist.*$/", "group": "4_splfuser@1"},
+        {"command": "vscode-ibmi-queues.splfbrowser.search", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^splflist.*$/", "group": "4_splfuser@2"},
+        {"command": "vscode-ibmi-queues.splfbrowser.removeFilter", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^splflist.*$/", "group": "5_splfuser@1"},
+        {"command": "vscode-ibmi-queues.splfbrowser.deleteAll", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^splflist$/", "group": "5_splfuser@2"},
+        {"command": "vscode-ibmi-queues.splfbrowser.delete", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile$/ ", "group": "3_spooledfile@0"},
+        {"command": "vscode-ibmi-queues.splfbrowser.deleteNamed", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile$/ ", "group": "3_spooledfile@1"},
+        {"command": "vscode-ibmi-queues.splfbrowser.removeFiltered", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile$/ ", "group": "3_spooledfile@2"},
+        {"command": "vscode-ibmi-queues.splfbrowser.move", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile$/", "group": "2_spooledfile@3"},
+        {"command": "vscode-ibmi-queues.splfbrowser.search", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile.*$/", "group": "1_spooledfile@2"},
+        {"command": "vscode-ibmi-queues.splfbrowser.filter", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile.*$/", "group": "1_spooledfile@1"},
+        {"submenu": "vscode-ibmi-queues.splfbrowser.openSpooledFile", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile.*$/", "group": "0_open@1"},
+        {"submenu": "vscode-ibmi-queues.splfbrowser.sortSpooledFiles", "when": "view == Queues-SpoolfedBrowser", "group": "0_open@3"},
+        {"submenu": "vscode-ibmi-queues.splfbrowser.download", "when": "view == Queues-SpoolfedBrowser && viewItem =~ /^spooledfile.*$/", "group": "0_open@5"},
+        {"command": "vscode-ibmi-queues.messageBrowser.refresh", "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/", "group": "inline@1"},
+        {"command": "vscode-ibmi-queues.messageBrowser.filterInquiry", "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/", "group": "inline@2"},
+        {"command": "vscode-ibmi-queues.messageBrowser.removeFilter", "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/", "group": "inline@3"},
+        {"command": "vscode-ibmi-queues.messageBrowser.filter", "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/", "group": "4_messagequeue@1"},
+        {"command": "vscode-ibmi-queues.messageBrowser.filterInquiry", "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/", "group": "4_messagequeue@2"},
+        {"command": "vscode-ibmi-queues.messageBrowser.search", "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/", "group": "4_messagequeue@2"},
+        {"command": "vscode-ibmi-queues.messageBrowser.removeFilter", "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/", "group": "5_messagequeue@1"},
+        {"command": "vscode-ibmi-queues.messageBrowser.deleteAll", "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq$/", "group": "5_messagequeue@2"},
+        {"command": "vscode-ibmi-queues.messageBrowser.deleteAllButUnanswered", "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq$/", "group": "5_messagequeue@2"},
+        {"command": "vscode-ibmi-queues.messageBrowser.delete", "when": "view == Queues-MessageBrowser && viewItem =~ /^message$/ ", "group": "3_message@0"},
+        {"command": "vscode-ibmi-queues.messageBrowser.deleteByID", "when": "view == Queues-MessageBrowser && viewItem =~ /^message$/ ", "group": "3_message@1"},
+        {"command": "vscode-ibmi-queues.messageBrowser.deleteFiltered", "when": "view == Queues-MessageBrowser && viewItem =~ /^message$/ ", "group": "3_message@2"},
+        {"command": "vscode-ibmi-queues.messageBrowser.ReplyToUnanswered", "when": "view == Queues-MessageBrowser && viewItem == message_INQUIRY_UNANSWERED", "group": "2_message@3"},
+        {"command": "vscode-ibmi-queues.messageBrowser.search", "when": "view == Queues-MessageBrowser && viewItem =~ /^message.*$/", "group": "1_message@2"},
+        {"command": "vscode-ibmi-queues.messageBrowser.filter", "when": "view == Queues-MessageBrowser && viewItem =~ /^message.*$/", "group": "1_message@1"},
+        {"submenu": "vscode-ibmi-queues.messageBrowser.sort", "when": "view == Queues-MessageBrowser", "group": "1_message@1"},
+        {"command": "vscode-ibmi-queues.messageBrowser.sendMessage", "when": "view == Queues-MessageBrowser && viewItem =~ /^msgq.*$/", "group": "0_open@2"},
+        {"submenu": "vscode-ibmi-queues.messageBrowser.viewMessage", "when": "view == Queues-MessageBrowser && viewItem =~ /^message.*$/", "group": "0_open@1"},
+        {"command": "vscode-ibmi-queues.messageBrowser.sendInquiryMessage", "when": "view == Queues-MessageBrowser && viewItem =~ /^message.*$/", "group": "0_open@3"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.refresh", "when": "view == Queues-UserJobBrowser ", "group": "inline@1"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.refresh", "when": "view == Queues-UserJobBrowser && viewItem =~ /^userJobUser.*/", "group": "inline@1"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.filter", "when": "view == Queues-UserJobBrowser && viewItem =~ /^userJobUser.*/", "group": "inline@2"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.filterMSGW", "when": "view == Queues-UserJobBrowser && viewItem =~ /^userJobUser.*/", "group": "inline@2"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.removeFilter", "when": "view == Queues-UserJobBrowser && viewItem =~ /^userJobUser.*/", "group": "inline@3"},
+        {"submenu": "vscode-ibmi-queues.userJobBrowser.sort", "when": "view == Queues-UserJobBrowser && viewItem =~ /^userJobUser.*/", "group": "0_userjobs@1"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.refresh", "when": "view == Queues-UserJobBrowser && viewItem =~ /^userJobUser.*/", "group": "2_userjobs@1"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.filterMSGW", "when": "view == Queues-UserJobBrowser && viewItem =~ /^userJobUser.*/", "group": "3_userjobs@2"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.filter", "when": "view == Queues-UserJobBrowser && viewItem =~ /^userJobUser.*/", "group": "3_userjobs@1"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.removeFilter", "when": "view == Queues-UserJobBrowser && viewItem =~ /^userJobUser.*/", "group": "6_userjobs@3"},
+        {"submenu": "vscode-ibmi-queues.userJobBrowser.view", "when": "view == Queues-UserJobBrowser && viewItem =~ /^userJobJob.*$/", "group": "0_jobs@1"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.filter", "when": "view == Queues-UserJobBrowser && viewItem =~ /^userJobJob.*$/", "group": "2_jobs@1"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.filterMSGW", "when": "view == Queues-UserJobBrowser && viewItem =~ /^userJobJob.*$/", "group": "2_jobs@1"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.ReplyToJobMessage", "when": "view == Queues-UserJobBrowser && viewItem =~ /^userJobJob.*[MSGW]$/", "group": "3_jobs@3"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.HoldJob", "when": "view == Queues-UserJobBrowser && viewItem =~ /^userJobJob.+(?<!OUTQ|HLD|HELD)$/", "group": "4_jobs@3"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.release", "when": "view == Queues-UserJobBrowser && viewItem =~ /^userJobJob.*(_ACTIVE).*(HLD|HELD)$/", "group": "4_jobs@4"}
       ],
       "commandPalette": [
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.addFilter",
-          "when": "true"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.addUserFilter",
-          "when": "true"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.closeSearchView",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.collapseSearchView",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.delete",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.deleteAll",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.deleteAllButUnanswered",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.deleteByID",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.deleteFiltered",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.expandSearchView",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.filter",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.filterInquiry",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.refresh",
-          "when": "true"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.refreshBrowser",
-          "when": "true"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.removeFilter",
-          "when": "true"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.ReplyToUnanswered",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.revealBrowser",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.search",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.searchBrowser",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.sendInquiryMessage",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.sendMessage",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.sortByDate",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.sortByID",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.sortFilter",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.messageBrowser.viewMessageDetails",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.addOUTQFilter",
-          "when": "true"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.addUserFilter",
-          "when": "true"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.closeSearchView",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.collapseSearchView",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.createUpdatedSPOOLED_FILE_DATA_TF",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.delete",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.deleteAll",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.removeFilter",
-          "when": "true"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.removeFiltered",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.deleteNamed",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.downloadDefault",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.downloadWithLineSpacing",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.dropUpdatedSPOOLED_FILE_DATA_TF",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.expandSearchView",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.filter",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.move",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.openasPDF",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.openWithDefault",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.openWithLineSpacing",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.openWithoutLineSpacing",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.refreshBrowser",
-          "when": "true"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.revealBrowser",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.search",
-          "when": "true"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.sortFilesByDate",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.sortFilesByName",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.splfbrowser.sortFilter",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.addFilter",
-          "when": "true"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.filter",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.filterMSGW",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.HoldJob",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.refreshBrowser",
-          "when": "true"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.refresh",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.release",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.removeFilter",
-          "when": "true"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.ReplyToJobMessage",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.revealBrowser",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.sortFilter",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.sortByDate",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.sortByID",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.viewDetails",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-queues.userJobBrowser.viewJoblog",
-          "when": "never"
-        }
+        {"command": "vscode-ibmi-queues.messageBrowser.addFilter",                      "when": "true" },
+        {"command": "vscode-ibmi-queues.messageBrowser.addUserFilter",                  "when": "true" },
+        {"command": "vscode-ibmi-queues.messageBrowser.closeSearchView",                "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.collapseSearchView",             "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.delete",                         "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.deleteAll",                      "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.deleteAllButUnanswered",         "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.deleteByID",                     "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.deleteFiltered",                 "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.expandSearchView",               "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.filter",                         "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.filterInquiry",                  "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.refresh",                        "when": "true" },
+        {"command": "vscode-ibmi-queues.messageBrowser.refreshBrowser",                 "when": "true" },
+        {"command": "vscode-ibmi-queues.messageBrowser.removeFilter",                   "when": "true" },
+        {"command": "vscode-ibmi-queues.messageBrowser.ReplyToUnanswered",              "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.revealBrowser",                  "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.search",                         "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.searchBrowser",                  "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.sendInquiryMessage",             "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.sendMessage",                    "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.sortByDate",                     "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.sortByID",                       "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.sortFilter",                     "when": "never"},
+        {"command": "vscode-ibmi-queues.messageBrowser.viewMessageDetails",             "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.addOUTQFilter",                     "when": "true" },
+        {"command": "vscode-ibmi-queues.splfbrowser.addUserFilter",                     "when": "true" },
+        {"command": "vscode-ibmi-queues.splfbrowser.closeSearchView",                   "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.collapseSearchView",                "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.createUpdatedSPOOLED_FILE_DATA_TF", "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.delete",                            "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.deleteAll",                         "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.removeFilter",                      "when": "true" },
+        {"command": "vscode-ibmi-queues.splfbrowser.removeFiltered",                    "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.deleteNamed",                       "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.downloadDefault",                   "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.downloadWithLineSpacing",           "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.dropUpdatedSPOOLED_FILE_DATA_TF",   "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.expandSearchView",                  "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.filter",                            "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.move",                              "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.openasPDF",                         "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.openWithDefault",                   "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.openWithLineSpacing",               "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.openWithoutLineSpacing",            "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.refreshBrowser",                    "when": "true" },
+        {"command": "vscode-ibmi-queues.splfbrowser.revealBrowser",                     "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.search",                            "when": "true" },
+        {"command": "vscode-ibmi-queues.splfbrowser.sortFilesByDate",                   "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.sortFilesByName",                   "when": "never"},
+        {"command": "vscode-ibmi-queues.splfbrowser.sortFilter",                        "when": "never"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.addFilter",                      "when": "true" },
+        {"command": "vscode-ibmi-queues.userJobBrowser.filter",                         "when": "never"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.filterMSGW",                     "when": "never"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.HoldJob",                        "when": "never"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.refreshBrowser",                 "when": "true" },
+        {"command": "vscode-ibmi-queues.userJobBrowser.refresh",                        "when": "never"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.release",                        "when": "never"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.removeFilter",                   "when": "true" },
+        {"command": "vscode-ibmi-queues.userJobBrowser.ReplyToJobMessage",              "when": "never"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.revealBrowser",                  "when": "never"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.sortFilter",                     "when": "never"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.sortByDate",                     "when": "never"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.sortByID",                       "when": "never"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.viewDetails",                    "when": "never"},
+        {"command": "vscode-ibmi-queues.userJobBrowser.viewJoblog",                     "when": "never"}
       ]
     },
-    "keybindings": []
+    "keybindings"    : []
   },
   "scripts": {
-    "vscode:prepublish": "npm run package",
-    "package": "webpack --mode production --devtool hidden-source-map",
-    "nls": "npx @vscode/l10n-dev export --outDir ./l10n ./src",
-    "compile": "webpack",
-    "watch": "webpack --watch",
-    "lint": "eslint src --ext ts",
-    "zzpackage": "webpack --mode production --devtool hidden-source-map",
+    "vscode:prepublish"  : "npm run package",
+    "package"            : "webpack --mode production --devtool hidden-source-map",
+    "nls"                : "npx @vscode/l10n-dev export --outDir ./l10n ./src",
+    "compile"            : "webpack",
+    "watch"              : "webpack --watch",
+    "lint"               : "eslint src --ext ts",
+    "zzpackage"          : "webpack --mode production --devtool hidden-source-map",
     "zzvscode:prepublish": "npm run build"
   },
   "devDependencies": {
-    "@halcyontech/vscode-ibmi-types": "^2.16.0",
-    "@types/glob": "^7.2.0",
-    "@types/mocha": "^9.1.1",
-    "@types/node": "^20",
-    "@types/tmp": "^0.2.6",
-    "@types/vscode": "^1.90.0",
+    "@halcyontech/vscode-ibmi-types"  : "^2.16.0",
+    "@types/glob"                     : "^7.2.0",
+    "@types/mocha"                    : "^9.1.1",
+    "@types/node"                     : "^20",
+    "@types/tmp"                      : "^0.2.6",
+    "@types/vscode"                   : "^1.90.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@typescript-eslint/parser": "^5.62.0",
-    "esbuild": "^0.25.5",
-    "esbuild-loader": "^4.3.0",
-    "eslint": "^8.56.0",
-    "glob": "^8.1.0",
-    "mocha": "^11.7.5",
-    "rimraf": "^5.0.5",
-    "sanitize-filename": "^1.6.3",
-    "tmp": "^0.2.1",
-    "typescript": "^4.9.5",
-    "webpack": "^5.94.0",
-    "webpack-cli": "^5.1.4"
+    "@typescript-eslint/parser"       : "^5.62.0",
+    "esbuild"                         : "^0.25.5",
+    "esbuild-loader"                  : "^4.3.0",
+    "eslint"                          : "^8.56.0",
+    "glob"                            : "^8.1.0",
+    "mocha"                           : "^11.7.5",
+    "rimraf"                          : "^5.0.5",
+    "sanitize-filename"               : "^1.6.3",
+    "tmp"                             : "^0.2.1",
+    "typescript"                      : "^4.9.5",
+    "webpack"                         : "^5.94.0",
+    "webpack-cli"                     : "^5.1.4"
   },
-  "dependencies": {
-    "@types/tmp": "^0.2.3",
-    "@vscode/webview-ui-toolkit": "^1.4.0",
-    "i": "^0.3.7",
-    "npm": "^10.9.3",
-    "sanitize-filename": "^1.6.3",
-    "tmp": "^0.2.1"
-  }
+  "dependencies": {"@types/tmp": "^0.2.3", "@vscode/webview-ui-toolkit": "^1.4.0", "i": "^0.3.7", "npm": "^10.9.3", "sanitize-filename": "^1.6.3", "tmp": "^0.2.1"}
 }
