@@ -1,5 +1,7 @@
 # Change Log
 
+## 0.1.0
+- Fixed issue from issue #2 (No right-click menu JOb Browser)
 ## 0.0.15
 - Found and fixed the bug reported in issue #5 (Error displaying Spool file)
 ## 0.0.14
