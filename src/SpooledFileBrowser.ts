@@ -69,7 +69,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
           const newUserSplfs = userInput.trim().toUpperCase().toUpperCase().split(`/`);
           const i = newUserSplfs.length;
           // Split value
-          const newEntry: IBMISplfList = { name: newUserSplfs[i - 1], library: i > 1 ? newUserSplfs[i - 1] : '*LIBL', type: '*USRPRF' };
+          const newEntry: IBMISplfList = { name: newUserSplfs[i - 1], library: i > 1 ? newUserSplfs[i - 2] : '*LIBL', type: '*USRPRF' };
 
           if (!splfConfig.includes(newEntry)) {
             splfConfig.push(newEntry);
@@ -99,7 +99,7 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
           let newOUTQ = userInput.trim().toUpperCase().toUpperCase().split(`/`);
           const i = newOUTQ.length;
           // Split value
-          const newEntry: IBMISplfList = { name: newOUTQ[i - 1], library: i > 1 ? newOUTQ[i - 1] : '*LIBL', type: '*OUTQ' };
+          const newEntry: IBMISplfList = { name: newOUTQ[i - 1], library: i > 1 ? newOUTQ[i - 2] : '*LIBL', type: '*OUTQ' };
 
           if (!splfConfig.includes(newEntry)) {
             splfConfig.push(newEntry);
@@ -473,8 +473,8 @@ export function initializeSpooledFileBrowser(context: vscode.ExtensionContext, t
             });
             searchTerm = searchTerm.toLocaleUpperCase();
             let splfQ: IBMISplfList = {name: '', library: '', type: '' };
-            if (/splflist(_readonly)?/.test(node.contextValue)) { splfQ = {name: node.name, library: node.library, type: node.type};} 
-            if (/spooledfile(_readonly)?/.test(node.contextValue)) { splfQ = {name: node.parent.name, library: node.parent.library, type: node.parent.type};} 
+            if (/splflist(_readonly)?/.test(node.contextValue)) { splfQ = {name: node.name, library: node.library, type: node.type};}
+            if (/spooledfile(_readonly)?/.test(node.contextValue)) { splfQ = {name: node.parent.name, library: node.parent.library, type: node.parent.type};}
             const splfnum = await IBMiContentSplf.getFilterSpooledFileCount(splfQ);
             if (Number(splfnum.numberOf) > 0) {
               if (/spooledfile(_readonly)?/.test(node.contextValue)) {
