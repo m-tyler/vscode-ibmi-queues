@@ -234,11 +234,12 @@ export async function checkSystemFunctionState(sysFunction: string, action: stri
   else {
     let funcInfo: FuncInfo = await whereIsCustomFunc('SPOOLED_FILE_DATA');
     // Check to see if function updated
-    if (funcInfo.funcSysLib !== `ILEDITOR` && action === `add`) {
+    const tempLib = Code4i.getTempLibrary();
+    if (funcInfo.funcSysLib !== tempLib && action === `add`) {
       return connection.withTempDirectory(async tempDir => {
         const tempSourcePath = posix.join(tempDir, `overrideSPOOLED_FILE_DATA_Funcition.sql`);
 
-        await content.writeStreamfileRaw(tempSourcePath, getSource(`SPOOLED_FILE_DATA`, Code4i.getTempLibrary()));
+        await content.writeStreamfileRaw(tempSourcePath, getSource(`SPOOLED_FILE_DATA`, tempLib));
         const result = await connection.runCommand({
           command: `RUNSQLSTM SRCSTMF('${tempSourcePath}') COMMIT(*NONE) NAMING(*SQL)`,
           cwd: `/`,
@@ -254,9 +255,9 @@ export async function checkSystemFunctionState(sysFunction: string, action: stri
         return lstate;
       });
     }
-    else if (funcInfo.funcSysLib === `ILEDITOR` && action === `drop`) {
+    else if (funcInfo.funcSysLib === tempLib && action === `drop`) {
       return connection.withTempDirectory(async tempDir => {
-        await Code4i.runSQL(`drop function if exists ${Code4i.getTempLibrary()}.SPOOLED_FILE_DATA`);
+        await Code4i.runSQL(`drop function if exists ${tempLib}.SPOOLED_FILE_DATA`);
         return true;
       });
     }
@@ -343,7 +344,6 @@ export function toTitleCase(str: string): string {
 function getSource(func: string, library: string) {
   switch (func) {
   case `SPOOLED_FILE_DATA`:
-    if (library !== 'ILEDITOR') { return Buffer.from([``].join(`\n`), "utf8"); }
     return Buffer.from([
       `--  Generate SQL `
       , `--  Original Version:           	V7R5M0 220415 `
@@ -431,16 +431,16 @@ function getSource(func: string, library: string) {
 export async function updateFilterConfigForServer<T>( configurationSection: string, serverName: string, newConfig: ExtractArrayType<T>[] ): Promise<void> {
    const configurationItem = `vscode-ibmi-queues.${configurationSection}`;
   const config = vscode.workspace.getConfiguration(configurationItem);
-  
+
   // 1. Determine the correct target
   // If no workspace folders are open, we must use Global (User) settings
-  const target = vscode.workspace.workspaceFolders 
-    ? vscode.ConfigurationTarget.Workspace 
+  const target = vscode.workspace.workspaceFolders
+    ? vscode.ConfigurationTarget.Workspace
     : vscode.ConfigurationTarget.Global;
 
   const currentFilters = config.get<any[]>('filters') || [];
   const serverIndex = currentFilters.findIndex(item => Object.keys(item).includes(serverName));
-  
+
   // Create a mutable copy to avoid reference issues
   const updatedFilters = [...currentFilters];
 
