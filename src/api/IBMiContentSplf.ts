@@ -33,11 +33,11 @@ function isInvalidDeviceType(node: IBMiSpooledFile): boolean {
 }
 export namespace IBMiContentSplf {
   /**
-  * @param {IBMISplfList} treeFilter 
+  * @param {IBMISplfList} treeFilter
   * @param {string} SortOptions
   * @param {string} splfName
   * @param {string} searchFilter
-  * @param {number} resultLimit sometimes system can only handle so many results, default is 10000. 
+  * @param {number} resultLimit sometimes system can only handle so many results, default is 10000.
   * @returns {Promise<IBMiSpooledFile[]>} returns array of spooled files for filter criteria of type {@link IBMiSpooledFile}
   */
   export async function getSpooledFileFilter(treeFilter: IBMISplfList, sort: SortOptions, splfName?: string, searchFilter?: string, resultLimit?: number): Promise<IBMiSpooledFile[]> {
@@ -57,11 +57,11 @@ export namespace IBMiContentSplf {
       , ifnull(SPE.USER_DATA,'') USER_DATA , ifnull(SPE.SIZE,0) SIZE , ifnull(SPE.TOTAL_PAGES,0) TOTAL_PAGES
       , SPE.QUALIFIED_JOB_NAME, SPE.JOB_NAME, SPE.JOB_USER, SPE.JOB_NUMBER, SPE.FORM_TYPE
       , SPE.OUTPUT_QUEUE_LIBRARY, SPE.OUTPUT_QUEUE
-      from table (QSYS2.SPOOLED_FILE_INFO(${queryParm}) ) SPE 
+      from table (QSYS2.SPOOLED_FILE_INFO(${queryParm}) ) SPE
       where SPE.FILE_AVAILABLE = '*FILEEND' ${splfName ? ` and SPE.SPOOLED_FILE_NAME = ucase('${splfName}')` : ""}
-      order by ${sort.order === 'name' ? 'SPE.SPOOLED_FILE_NAME' : 'SPE.CREATION_TIMESTAMP'} 
-      ${!sort.ascending ? 'desc' : 'asc'} 
-      , SPE.SPOOLED_FILE_NUMBER ${!sort.ascending ? 'desc' : 'asc'} 
+      order by ${sort.order === 'name' ? 'SPE.SPOOLED_FILE_NAME' : 'SPE.CREATION_TIMESTAMP'}
+      ${!sort.ascending ? 'desc' : 'asc'}
+      , SPE.SPOOLED_FILE_NUMBER ${!sort.ascending ? 'desc' : 'asc'}
       limit ${resultLimit}`.replace(/\n\s*/g, ' ');
     let results = await Code4i.runSQL(objQuery);
 
@@ -96,10 +96,10 @@ export namespace IBMiContentSplf {
   }
   /**
   * Download the contents of a source member
-  * 
-  * @param {string} pPath 
-  * @param {SplfOpenOptions} options 
-  * @returns {string} a string containing spooled file data 
+  *
+  * @param {string} pPath
+  * @param {SplfOpenOptions} options
+  * @returns {string} a string containing spooled file data
   */
   export async function downloadContent(pPath: string, options: SplfOpenOptions): Promise<string> {
     pPath = pPath.replace(/^\/+/, '') || '';
@@ -124,8 +124,7 @@ export namespace IBMiContentSplf {
 
     let retried = false;
     let retry = 1;
-    // let fileEncoding :BufferEncoding|null = `utf8`;
-    let fileEncoding: string | null = `utf8`;
+    let fileEncoding: BufferEncoding | null = `utf8`;
     let cpysplfCompleted: CommandResult = { code: -1, stdout: ``, stderr: `` };
     let results: string = ``;
     let theStatement: string = ``;
@@ -178,7 +177,8 @@ export namespace IBMiContentSplf {
     }
 
     await client.getFile(tmplclfile, tempRmt);
-    results = await readFileAsync(tmplclfile, fileEncoding);
+    const rawContent = await readFileAsync(tmplclfile);
+    results = fileEncoding ? rawContent.toString(fileEncoding) : rawContent.toString('binary');
     if (cpysplfCompleted.code === 0 && openMode === 'withSpaces') {
       await vscode.window.withProgress({
         location: vscode.ProgressLocation.Window,
@@ -198,13 +198,13 @@ export namespace IBMiContentSplf {
   }
   /**
    * Get extra Spooled File information, PAGE_LENGTH, for use mostly by the open with line spacing
-   * 
+   *
    * @param {string} queues[] - OUTQ name
    * @param {string} queueLibraries[] - OUTQ library name
    * @param {string} spflNames[] - Spooled File name
    * @param {string} qualifiedJobName - optional - Spooled File qualified job ID
    * @param {string} spflNum - optional - Spooled File name+job sequence number
-   * @returns a promised IBMiSpooledFile array, with the page length value 
+   * @returns a promised IBMiSpooledFile array, with the page length value
   */
   export async function getSpooledPageLength(queues: string[], queueLibraries: string[], splfNames: string[], jobUsers: string[]
     , qualifiedJobName?: string, splfNum?: string): Promise<IBMiSpooledFile[]> {
@@ -216,7 +216,7 @@ export namespace IBMiContentSplf {
         ,QE.SPOOLED_FILE_NAME ,QE.FILE_NUMBER ,QE.JOB_NAME ,QE.USER_DATA ,QE.USER_NAME
         ,QE.PAGE_LENGTH
       from QSYS2.OUTPUT_QUEUE_ENTRIES QE
-      where OUTQLIB in (${OBJLIBS}) and OUTQ in (${OBJS}) 
+      where OUTQLIB in (${OBJLIBS}) and OUTQ in (${OBJS})
       ${FILES ? `and QE.SPOOLED_FILE_NAME in (${FILES})` : ``}
       ${USERS ? `and QE.USER_NAME in (${USERS})` : ``}
       ${qualifiedJobName ? ` and QE.JOB_NAME = '${qualifiedJobName}'` : ''}
@@ -242,7 +242,7 @@ export namespace IBMiContentSplf {
   }
   /**
    * Get extra Spooled File information, DEVICE_TYPE, needed for determining the open file extension or if Spooled File can be opened
-   * 
+   *
    * @param {string[]} queues - one or more OUTQ names
    * @param {string[]} queueLibrary - one or more OUTQ library names
    * @param {string} spflName - optional, Spooled File name, use to filter results
@@ -257,7 +257,7 @@ export namespace IBMiContentSplf {
     const FILES = splfNames?.map(splfName => `'${splfName}'`).join(', ') || '';
     const USERS = jobUsers?.map(jobUser => `'${jobUser}'`).join(', ') || '';
     const objQuery = `select OUTPUT_QUEUE_NAME, OUTPUT_QUEUE_LIBRARY_NAME, SPOOLED_FILE_NAME, JOB_NAME, FILE_NUMBER, DEVICE_TYPE
-      from QSYS2.OUTPUT_QUEUE_ENTRIES_BASIC QE where OUTQLIB in (${OBJLIBS}) and OUTQ in (${OBJS}) 
+      from QSYS2.OUTPUT_QUEUE_ENTRIES_BASIC QE where OUTQLIB in (${OBJLIBS}) and OUTQ in (${OBJS})
       ${FILES ? `and QE.SPOOLED_FILE_NAME in (${FILES})` : ``}
       ${USERS ? `and QE.USER_NAME in (${USERS})` : ``}
       ${qualifiedJobName ? `and QE.JOB_NAME = '${qualifiedJobName}'` : ``}
@@ -282,10 +282,10 @@ export namespace IBMiContentSplf {
   }
   /**
    * Get extra Spooled File information, IBMiSplfCounts, for use mostly by the open with line spacing
-   * 
-   * @param {IBMISplfList} treeFilter 
+   *
+   * @param {IBMISplfList} treeFilter
    * @param {string} searchWord - optional, Additional words used to filter results
-   * @returns a promised array of type, {@link IBMiSplfCounts} 
+   * @returns a promised array of type, {@link IBMiSplfCounts}
   */
   export async function getFilterSpooledFileCount(treeFilter: IBMISplfList, searchFilter?: string): Promise<IBMiSplfCounts> {
     let query = ``;
@@ -299,8 +299,8 @@ export namespace IBMiContentSplf {
 
     if (treeFilter.type === '*USRPRF' || treeFilter.type === '*OUTQ' && searchFilter) {
       query = `select count(*) SPLF_COUNT, sum(TOTAL_PAGES) TOTAL_PAGES
-        from table (QSYS2.SPOOLED_FILE_INFO(${queryParm}) ) SPE 
-        where FILE_AVAILABLE = '*FILEEND' 
+        from table (QSYS2.SPOOLED_FILE_INFO(${queryParm}) ) SPE
+        where FILE_AVAILABLE = '*FILEEND'
         ${searchFilterU ? ` and (ucase(SPE.SPOOLED_FILE_NAME) like '%${searchFilterU}%'
                               or ucase(SPE.STATUS) like '%${searchFilterU}%'
                               or char(SPE.CREATION_TIMESTAMP) like '%${searchFilterU}%'
@@ -315,10 +315,10 @@ export namespace IBMiContentSplf {
                         )` : ''}
         `.replace(/\n\s*/g, ' ');
     } else if (treeFilter.type === '*OUTQ' && !searchFilter) {
-      query = `select NUMBER_OF_FILES SPLF_COUNT, 0 TOTAL_PAGES 
+      query = `select NUMBER_OF_FILES SPLF_COUNT, 0 TOTAL_PAGES
       from QSYS2.OUTPUT_QUEUE_INFO OQ
       ${treeFilter.library === `*LIBL` ? `inner join QSYS2.LIBRARY_LIST_INFO LL on OQ.OUTPUT_QUEUE_LIBRARY_NAME = LL.SYSTEM_SCHEMA_NAME` : ``}
-      where OUTPUT_QUEUE_NAME = '${treeFilter.name}' 
+      where OUTPUT_QUEUE_NAME = '${treeFilter.name}'
       ${treeFilter.library !== `*LIBL` ? `and OUTPUT_QUEUE_LIBRARY_NAME = '${treeFilter.library}'` : ``}
       limit 1`.replace(/\n\s*/g, ' ');
     }
@@ -329,13 +329,13 @@ export namespace IBMiContentSplf {
     return { numberOf: String(results[0].SPLF_COUNT), totalPages: String(results[0].TOTAL_PAGES) };
   }
   /**
-   * Get values deemed too expensive to get with the main list of spooled files in the treeview. 
-   *  The return array also returns values for matching to in caller routines. 
-   * 
+   * Get values deemed too expensive to get with the main list of spooled files in the treeview.
+   *  The return array also returns values for matching to in caller routines.
+   *
    * @param {string[]} name one or more Filter names
    * @param {string} library optional, Filter by library
    * @param {string} type optional, Filter by type, `*USRPRF` or `*OUTQ`
-   * @returns a promised array of type, {@link IBMISplfList} 
+   * @returns a promised array of type, {@link IBMISplfList}
   */
   export async function getFilterDescription(names: string[], library?: string, type?: string): Promise<IBMISplfList[]> {
     let OBJS = ``;
@@ -356,7 +356,7 @@ export namespace IBMiContentSplf {
     if (results.length >= 0) {
       treeFilter = results.map(result => ({
         library: String(result.OBJLIB),
-        name: String(result.OBJLIB),
+        name: String(result.OBJNAME),
         text: String(result.OBJECT_TEXT || ""),
       } as IBMISplfList));
     } else {
@@ -471,14 +471,14 @@ function reWriteWithSpaces(originalResults: string, pageLength?: number) {
     const skipToLine: number = line.substring(0, 3) === `   ` ? -9 : +line.substring(0, 3) - 1;
     const spaceToLines: number = line.substring(3, 4) === ` ` ? -9 : +line.substring(3, 4) - 1;
     line = line.substring(4);
-    //     1. If skipTo is < lineCount then  
+    //     1. If skipTo is < lineCount then
     //     -- newPageAction
     //     1. print blank lines for skipTo-1 quantity
-    //   else 
-    //     if skipTo >= lineCount then 
+    //   else
+    //     if skipTo >= lineCount then
     //       1. print blank lines for (skipTo-1-lineCount) quantity
     //     else
-    //     if spaceTo > 0 then 
+    //     if spaceTo > 0 then
     //       1. print blank lines for spaceTo-1 quantity
     //    2. print text line
     if (skipToLine > -9) {
@@ -494,9 +494,9 @@ function reWriteWithSpaces(originalResults: string, pageLength?: number) {
         pageCount++;
       } else {
         if (skipToLine >= lineCount) {
-          // Sometimes when reports have more than 3 blank lines the system 
+          // Sometimes when reports have more than 3 blank lines the system
           // does a skipTo line value instead of a space to in the middle of a report page
-          // so this acts like a large spaceTo value. 
+          // so this acts like a large spaceTo value.
           for (let l = lineCount; l < skipToLine; l++) { newLines.push(``); lineCount++; }
         }
       }
