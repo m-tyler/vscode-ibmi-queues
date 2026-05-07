@@ -26,6 +26,7 @@ export namespace IBMiContentMsgq {
       from QSYS2.MESSAGE_QUEUE_INFO MS1
       ${!treeFilter.messageQueueLibrary ? `inner join QSYS2.LIBRARY_LIST_INFO on SCHEMA_NAME = MS1.MESSAGE_QUEUE_LIBRARY` : ''}
       where MS1.MESSAGE_TYPE not in ('REPLY') 
+      ${treeFilter.messageQueueLibrary ? `and MS1.MESSAGE_QUEUE_LIBRARY = '${treeFilter.messageQueueLibrary}'` : ''}
       ${treeFilter.type === '*MSGQ' ? `and MS1.MESSAGE_QUEUE_NAME = '${treeFilter.messageQueue}'` : ''}
       ${treeFilter.type === '*USRPRF' ? `and MS1.FROM_USER = '${treeFilter.messageQueue}'` : ''}
       ${messageID ? ` and MESSAGE_ID = '${messageID}'` : ''}
